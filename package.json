@@ -1,0 +1,53 @@
+{
+  "name": "create-skeleton-app",
+  "version": "0.0.12",
+  "description": "Use this CLI app to setup a new Skeleton application in a new SvelteKit project.",
+  "keywords": [
+    "skeleton",
+    "svelte",
+    "sveltekit",
+    "svelte-kit"
+  ],
+  "homepage": "https://www.skeleton.dev",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/skeletonlabs/skeleton",
+    "directory": "packages/create-skeleton-app/"
+  },
+  "license": "MIT",
+  "author": "Skeleton Admin <admin@skeletonlabs.co>",
+  "type": "module",
+  "main": "./src/index.js",
+  "bin": {
+    "create-skeleton-app": "./src/index.js"
+  },
+  "files": [
+    "src/**",
+    "templates/**"
+  ],
+  "engines": {
+    "node": ">=14.16"
+  },
+  "scripts": {
+    "dev": "node src/index.js",
+    "long": "node src/index.js --types=typescript --prettier --eslint --playwright=false -f svelte-kit --forms --typography -t crimson --skeletontemplate=welcome",
+    "pub:beta": "npm publish --tag beta",
+    "pub:next": "npm publish --tag next",
+    "pub:release": "npm publish",
+    "release": "npm publish",
+    "start": "node dist/index.js"
+  },
+  "dependencies": {
+    "create-svelte": "^2.0.0-next.193",
+    "fs-extra": "^10.1.0",
+    "kleur": "^4.1.5",
+    "mri": "^1.2.0",
+    "prompts": "^2.4.2"
+  },
+  "devDependencies": {
+    "bumpp": "^8.2.1",
+    "eslint": "^8.28.0",
+    "standard-version": "^9.5.0",
+    "svelte": "^3.53.1"
+  }
+}
