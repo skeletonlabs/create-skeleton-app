@@ -130,8 +130,8 @@ Problems? Open an issue on ${cyan('https://github.com/skeletonlabs/skeleton/issu
 	// 		name: 'framework',
 	// 		message: 'Select what framework you wish to use:',
 	// 		choices: [
-	// 			{ title: 'Svelte Kit', value: 'svelte-kit' },
-	// 			{ title: 'Svelte Kit Library', value: 'svelte-kit-lib' }
+	// 			{ title: 'SvelteKit', value: 'svelte-kit' },
+	// 			{ title: 'SvelteKit Library', value: 'svelte-kit-lib' }
 	// 			// { title: 'Vite (Svelte)', value: 'vite' },
 	// 			// { title: 'Astro', value: 'astro' }
 	// 		]
