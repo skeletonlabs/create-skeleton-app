@@ -22,6 +22,7 @@ export class SkeletonOptions {
 	eslint = true;
 	playwright = false;
 	vitest = false;
+	inspector = false;
 
 	// create-skeleton-app additions
 	_ = []; //catch all for extraneous params from mri, used to capture project name.
@@ -107,7 +108,7 @@ export async function createSkeleton(opts) {
 	}
 
 	// write out config files
-	out('svelte.config.js', createSvelteConfig());
+	out('svelte.config.js', createSvelteConfig(opts));
 	out('tailwind.config.cjs', createTailwindConfig(opts));
 	out('postcss.config.cjs', createPostCssConfig());
 
@@ -132,7 +133,19 @@ export async function createSkeleton(opts) {
 	return opts;
 }
 
-function createSvelteConfig() {
+function createSvelteConfig(opts) {
+	let inspectorConfig = ''
+	if (opts.inspector == true) {
+		inspectorConfig = `
+	vitePlugin: {
+		experimental: {
+			inspector: {
+				holdMode: true,
+			}
+		}
+	}		
+`
+	}
 	const str = `import adapter from '@sveltejs/adapter-auto';
 import preprocess from "svelte-preprocess";
 
@@ -145,7 +158,7 @@ const config = {
 		preprocess({
 			postcss: true,
 		}),
-	],
+	],${inspectorConfig}
 };
 
 export default config;

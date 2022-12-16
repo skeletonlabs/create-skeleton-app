@@ -28,7 +28,7 @@
 	},
 	"scripts": {
 		"dev": "node src/index.js",
-		"long": "node src/index.js --types=typescript --prettier --eslint --playwright=false -f svelte-kit --forms --typography -t crimson --skeletontemplate=welcome",
+		"long": "node src/index.js --types=typescript --prettier --eslint --playwright=false -f svelte-kit --forms --typography --inspector -t crimson --skeletontemplate=welcome",
 		"pub:beta": "npm publish --tag beta",
 		"pub:next": "npm publish --tag next",
 		"pub:release": "npm publish",

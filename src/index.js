@@ -77,7 +77,8 @@ async function parseArgs() {
 			'typography',
 			'lineclamp',
 			'verbose',
-			'vitest'
+			'vitest',
+			'inspector'
 		],
 	});
 
@@ -201,6 +202,18 @@ Problems? Open an issue on ${cyan('https://github.com/skeletonlabs/skeleton/issu
 			type: 'toggle',
 			name: 'vitest',
 			message: 'Add Vitest for unit testing?',
+			initial: false,
+			active: 'Yes',
+			inactive: 'No'
+		}
+		questions.push(q);
+	}
+
+	if (!('inspector' in opts)) {
+		const q = {
+			type: 'toggle',
+			name: 'inspector',
+			message: 'Activate the experimental inspector?',
 			initial: false,
 			active: 'Yes',
 			inactive: 'No'
