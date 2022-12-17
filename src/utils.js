@@ -53,6 +53,7 @@ Option              Short   Quiet Default   Values                      Descript
 --prettier                  true            true|false                  Whether Prettier is added
 --eslint                    true            true|false                  Whether ESLint is added
 --playwright                false           true|false                  Whether Playwright is added
+--inspector                 false           true|false                  Whether to activate the inspector
 --framework         -f      svelte-kit      svelte-kit|svelte-kit-lib   Setup as Svelte Kit library project or library
 --path              -p      ''              relative or absolute path   Location to install, name is appended
 --forms                     false           true|false                  Add Tailwinds Forms plugin

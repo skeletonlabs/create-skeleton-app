@@ -28,7 +28,7 @@
 	},
 	"scripts": {
 		"dev": "node src/index.js",
-		"long": "node src/index.js --types=typescript --prettier --eslint --playwright=false -f svelte-kit --forms --typography -t crimson --skeletontemplatedir=../temple",
+		"long": "node src/index.js --types=typescript --prettier --eslint --playwright=false -f svelte-kit --forms --typography --inspector -t crimson --skeletontemplate=welcome",
 		"pub:beta": "npm publish --tag beta",
 		"pub:next": "npm publish --tag next",
 		"pub:release": "npm publish",
@@ -36,7 +36,7 @@
 		"start": "node dist/index.js"
 	},
 	"dependencies": {
-		"create-svelte": "^2.0.0-next.202",
+		"create-svelte": "^2.0.1",
 		"fs-extra": "^11.1.0",
 		"kleur": "^4.1.5",
 		"mri": "^1.2.0",
@@ -46,7 +46,7 @@
 		"bumpp": "^8.2.1",
 		"eslint": "^8.29.0",
 		"standard-version": "^9.5.0",
-		"svelte": "^3.54.0"
+		"svelte": "^3.55.0"
 	},
 	"packageManager": "yarn@3.3.0"
 }
