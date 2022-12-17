@@ -1,17 +1,52 @@
 Output demo.gif
-Output demo.mp4
-Output demo.webm
+#Output demo.mp4
+#Output demo.webm
 
-Set FontSize 32
+Set FontSize 14
 Set Width 1200
 Set Height 600
-Set LoopOffset 50%
+#Set LoopOffset 50%
 
-Type "create skeleton-app" Enter
-Type "my-new-app" Enter
-Type[@2] Down Enter Right Enter Right Enter Right Enter Right Enter
-Type[@1] Space Down Space Down Space Enter
-Type[@2] Enter Down Enter
+Type "pnpm create skeleton-app@latest my-skeleton-app" Enter
+Sleep 3s
+Down
+Sleep 1s
+Enter
+Sleep 1s
+Right
+Sleep 1s
+Enter
+Sleep 1s
+Right
+Sleep 1s
+Enter
+Sleep 1s
+Right
+Sleep 1s
+Enter
+Sleep 1s
+Right
+Sleep 1s
+Enter
+Sleep 1s
+Space
+Sleep 1s
+Down
+Sleep 1s
+Space
+Sleep 1s
+Down
+Sleep 1s
+Space
+Sleep 1s
+Enter
+Sleep 1s
+Enter
+Sleep 1s
+Down
+Sleep 1s
+Enter
+Sleep 20s
 
 
 
