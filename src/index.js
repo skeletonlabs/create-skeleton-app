@@ -9,6 +9,7 @@ import path from 'path';
 
 async function main() {
 	// grab any passed arguments from the command line
+	const startPath = process.cwd()
 	let opts = await parseArgs();
 
 	if ('quiet' in opts) {
@@ -33,8 +34,8 @@ async function main() {
 			runString = 'npm run dev\n';
 		}
 		let finalInstructions = bold(cyan(`\nDone! You can now:\n\n`));
-		if (process.cwd() != opts.path) {
-			finalInstructions += bold(cyan(`cd ${path.relative(process.cwd() + '/..', pathToInstall)}\n`));
+		if (startPath != opts.path) {
+			finalInstructions += bold(cyan(`cd ${path.relative(startPath, opts.path)}\n`));
 		}
 		finalInstructions += bold(cyan(runString))
 		finalInstructions += grey(`Need some help or found an issue? Visit us on Discord https://discord.gg/EXqV7W8MtY`);
