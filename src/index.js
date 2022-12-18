@@ -26,26 +26,19 @@ async function main() {
 
 	// And give the user some final information on what to do Next
 	if (!(opts?.quiet)) {
-		// @ts-ignore
 		const pm = opts.packagemanager;
-		let runString = `${pm} dev`;
+		let runString = `${pm} dev\n`;
 
 		if (pm == 'npm') {
-			runString = 'npm run dev';
+			runString = 'npm run dev\n';
 		}
-		// @ts-ignore
-		const pathToInstall = opts.path;
-		// prettier-ignore
-		const finalInstructions = bold(cyan(`
-Done! You can now:
-
-cd ${path.relative(process.cwd() + '/..', pathToInstall)}
-${runString}
-
-`)) + grey(`Need some help or found an issue? Visit us on Discord https://discord.gg/EXqV7W8MtY`);
+		let finalInstructions = bold(cyan(`\nDone! You can now:\n\n`));
+		if (process.cwd() != opts.path) {
+			finalInstructions += bold(cyan(`cd ${path.relative(process.cwd() + '/..', pathToInstall)}\n`));
+		}
+		finalInstructions += bold(cyan(runString))
+		finalInstructions += grey(`Need some help or found an issue? Visit us on Discord https://discord.gg/EXqV7W8MtY`);
 		console.log(finalInstructions);
-		// TODO: figure out the relative pathing option finally.
-		//console.log(path.relative(process.cwd() + '/..', pathToInstall), process.cwd() + '/..', pathToInstall)
 	}
 	process.exit();
 }
@@ -57,7 +50,6 @@ async function parseArgs() {
 	const opts = mri(argv, {
 		alias: {
 			h: 'help',
-			f: 'framework',
 			n: 'name',
 			p: 'path',
 			t: 'skeletontheme',
@@ -124,21 +116,6 @@ Problems? Open an issue on ${cyan('https://github.com/skeletonlabs/skeleton/issu
 			message: 'Name for your new project:',
 		});
 	}
-
-	// if (!('framework' in opts)) {
-	// 	const q = {
-	// 		type: 'select',
-	// 		name: 'framework',
-	// 		message: 'Select what framework you wish to use:',
-	// 		choices: [
-	// 			{ title: 'SvelteKit', value: 'svelte-kit' },
-	// 			{ title: 'SvelteKit Library', value: 'svelte-kit-lib' }
-	// 			// { title: 'Vite (Svelte)', value: 'vite' },
-	// 			// { title: 'Astro', value: 'astro' }
-	// 		]
-	// 	};
-	// 	questions.push(q);
-	// }
 
 	if (!('types' in opts)) {
 		const q = {
@@ -261,7 +238,7 @@ Problems? Open an issue on ${cyan('https://github.com/skeletonlabs/skeleton/issu
 
 	//Skeleton Template Selection
 	if (!('skeletontemplate' in opts)) {
-		// @ts-ignore need to check whether a templatedir has been passed in (might be from a script in package.json pointing to real template projects)
+		// need to check whether a templatedir has been passed in (might be from a script in package.json pointing to real template projects)
 		const templateDir = opts.skeletontemplatedir || '../templates';
 		let parsedChoices = [];
 		fs.readdirSync(dist(templateDir)).forEach((dir) => {
@@ -306,14 +283,6 @@ Problems? Open an issue on ${cyan('https://github.com/skeletonlabs/skeleton/issu
 	const skelOpts = new SkeletonOptions();
 	Object.assign(skelOpts, opts);
 
-	//Map some values for compat with what svelte-create expects.  Note that the skeleton references below
-	//have nothing to do with us, but rather create-svelte's internal naming for their starter templates.
-	if (opts.framework == 'svelte-kit') {
-		opts.template = 'skeleton';
-	}
-	if (opts.framework == 'svelte-kit-lib') {
-		opts.template = 'skeletonlib';
-	}
 	return skelOpts;
 }
 main();

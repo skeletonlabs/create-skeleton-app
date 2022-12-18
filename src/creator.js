@@ -7,11 +7,8 @@ import path from 'path';
 import { dist, whichPMRuns, mkdirp } from './utils.js';
 import { bold, red, cyan } from 'kleur/colors';
 
-// NOTE: Any changes here must also be reflected in the --help output in utils.ts and shortcut expansions in bin.ts.
+// NOTE: Any changes here must also be reflected in the --help output in utils.js and shortcut expansions in index.js.
 // Probably a good idea to do a search on the values you are changing to catch any other areas they are used in
-// Codebase would be a lot cleaner if Reflect() actually returned anything useful.
-// unbuild doesn't seem to like it when SkeletonOptions implements the Options type from create-svelte's internal type definitions
-// so they are copied over here just to make everything even more brittle.
 
 export class SkeletonOptions {
 	// svelte-create expects these options, do not change the names or values.
@@ -28,7 +25,6 @@ export class SkeletonOptions {
 	_ = []; //catch all for extraneous params from mri, used to capture project name.
 	help = false;
 	quiet = false;
-	framework = 'svelte-kit';
 	path = '.';
 	forms = false;
 	typography = false;
@@ -52,7 +48,7 @@ export async function createSkeleton(opts) {
 		opts.name.replace(/\s+/g, '-').toLowerCase(),
 	);
 
-	if (fs.existsSync(opts.path)) {
+	if (fs.existsSync(opts.path) && fs.readdirSync(opts.path).length != 0) {
 		console.error(red(bold('Install directory already exists!')));
 		process.exit();
 	}
@@ -116,16 +112,15 @@ export async function createSkeleton(opts) {
 	if (opts.monorepo) {
 		createViteConfig(opts)
 	}
-	if (opts.framework == 'svelte-kit' || opts.framework == 'svelte-kit-lib') {
-		out(
-			path.resolve(process.cwd(), 'src/routes/', '+layout.svelte'),
-			createSvelteKitLayout(opts),
-		);
-		out(
-			path.resolve(process.cwd(), 'src/', 'app.postcss'),
-			'/*place global styles here */',
-		);
-	}
+
+	out(
+		path.resolve(process.cwd(), 'src/routes/', '+layout.svelte'),
+		createSvelteKitLayout(opts),
+	);
+	out(
+		path.resolve(process.cwd(), 'src/', 'app.postcss'),
+		'/*place global styles here */',
+	);
 
 	// copy over selected template
 	copyTemplate(opts);
@@ -200,7 +195,7 @@ function createPostCssConfig() {
 // TODO - this is for monorepos only, need to see everything that needs to be modified for monorepos
 // currently packages are automatically added as a workspace reference if in a mono
 function createViteConfig(opts) {
-	
+
 	let filename = '';
 	if (opts.types == 'typescript') {
 		filename = 'vite.config.ts'
