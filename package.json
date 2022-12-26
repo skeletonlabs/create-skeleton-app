@@ -33,7 +33,9 @@
 		"pub:next": "npm publish --tag next",
 		"pub:release": "npm publish",
 		"release": "npm publish",
-		"start": "node dist/index.js"
+		"start": "node dist/index.js",
+		"lint": "prettier --plugin-search-dir . --check . && eslint .",
+		"format": "prettier --plugin-search-dir . --write ."
 	},
 	"dependencies": {
 		"create-svelte": "^2.0.1",
@@ -44,6 +46,7 @@
 	},
 	"devDependencies": {
 		"eslint": "^8.30.0",
+		"prettier": "^2.8.1",
 		"standard-version": "^9.5.0",
 		"svelte": "^3.55.0"
 	}
