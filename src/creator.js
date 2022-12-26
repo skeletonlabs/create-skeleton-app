@@ -74,6 +74,8 @@ export async function createSkeleton(opts) {
 		'@skeletonlabs/skeleton',
 	];
 
+	if (opts?.prettier) packages.push('prettier-plugin-tailwindcss');
+
 	if (opts?.typography) packages.push('@tailwindcss/typography');
 	if (opts?.forms) packages.push('@tailwindcss/forms');
 	if (opts?.lineclamp) packages.push('@tailwindcss/line-clamp');
