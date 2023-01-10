@@ -28,7 +28,7 @@
 	},
 	"scripts": {
 		"dev": "node src/index.js",
-		"long": "node src/index.js --types=typescript --prettier --eslint --playwright=false -f svelte-kit --forms --typography --inspector -t crimson --skeletontemplate=welcome",
+		"long": "node src/index.js --types=typescript --prettier --eslint --playwright=false --vitest=false --inspector=false --typography=false --forms=false --lineclamp=false -t crimson --skeletontemplate=welcome",
 		"pub:beta": "npm publish --tag beta",
 		"pub:next": "npm publish --tag next",
 		"pub:release": "npm publish",
@@ -43,7 +43,7 @@
 		"prompts": "^2.4.2"
 	},
 	"devDependencies": {
-		"eslint": "^8.29.0",
+		"eslint": "^8.30.0",
 		"standard-version": "^9.5.0",
 		"svelte": "^3.55.0"
 	}
