@@ -232,6 +232,7 @@ Problems? Open an issue on ${cyan('https://github.com/skeletonlabs/skeleton/issu
 				{ title: 'Vintage', value: 'vintage' },
 				{ title: 'Seafoam', value: 'seafoam' },
 				{ title: 'Crimson', value: 'crimson' },
+				{ title: 'Seasonal', value: 'seasonal'},
 			],
 		};
 		questions.push(q);
