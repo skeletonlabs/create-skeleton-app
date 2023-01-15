@@ -49,7 +49,7 @@ Option              Short   Quiet Default   Values                      Descript
 --quiet             -q                                                  Quiet mode - see below
 --verbose           -v                                                  Show shell output for troubleshooting
 --name              -n      new-skel-app    string, no spaces           Name of the directory for the project
---types                     typescript      typescript|checkjs          TypeScript of JavaScript with JSDoc
+--types                     typescript      typescript|checkjs          TypeScript or JavaScript with JSDoc
 --prettier                  true            true|false                  Whether Prettier is added
 --eslint                    true            true|false                  Whether ESLint is added
 --playwright                false           true|false                  Whether Playwright is added
