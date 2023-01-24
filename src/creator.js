@@ -180,7 +180,7 @@ function createTailwindConfig(opts) {
 		plugins.push(`require('@tailwindcss/typography')`);
 	if (opts.lineclamp == true)
 		plugins.push(`require('@tailwindcss/line-clamp')`);
-	plugins.push(`require('@skeletonlabs/skeleton/tailwind/skeleton.cjs')`);
+	plugins.push(`...require('@skeletonlabs/skeleton/tailwind/skeleton.cjs')()`);
 
 	const str = `/** @type {import('tailwindcss').Config} */
 module.exports = {
