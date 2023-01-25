@@ -6,6 +6,7 @@ import fs from 'fs-extra';
 import path from 'path';
 import { dist, whichPMRuns, mkdirp } from './utils.js';
 import { bold, red, cyan } from 'kleur/colors';
+import got from 'got'
 
 // NOTE: Any changes here must also be reflected in the --help output in utils.js and shortcut expansions in index.js.
 // Probably a good idea to do a search on the values you are changing to catch any other areas they are used in
@@ -104,6 +105,7 @@ export async function createSkeleton(opts) {
 	}
 
 	// write out config files
+	out('.vscode/settings.json', await createVSCodeSettings());
 	out('svelte.config.js', createSvelteConfig(opts));
 	out('tailwind.config.cjs', createTailwindConfig(opts));
 	out('postcss.config.cjs', createPostCssConfig());
@@ -161,6 +163,16 @@ export default config;
 	return str;
 }
 
+async function createVSCodeSettings() {
+	try {
+		mkdirp('.vscode')
+		const data = await got('https://raw.githubusercontent.com/skeletonlabs/skeleton/dev/scripts/tw-settings.json').text()
+		return data
+	} catch (error) {
+		console.error('Unable to download settings file for VSCode, please read manual instructions at https://skeleton.dev')
+	}
+}
+
 function createTailwindConfig(opts) {
 	let plugins = [];
 	if (opts.forms == true) plugins.push(`require('@tailwindcss/forms')`);
@@ -168,7 +180,7 @@ function createTailwindConfig(opts) {
 		plugins.push(`require('@tailwindcss/typography')`);
 	if (opts.lineclamp == true)
 		plugins.push(`require('@tailwindcss/line-clamp')`);
-	plugins.push(`require('@skeletonlabs/skeleton/tailwind/skeleton.cjs')`);
+	plugins.push(`...require('@skeletonlabs/skeleton/tailwind/skeleton.cjs')()`);
 
 	const str = `/** @type {import('tailwindcss').Config} */
 module.exports = {
