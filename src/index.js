@@ -191,7 +191,7 @@ Problems? Open an issue on ${cyan('https://github.com/skeletonlabs/skeleton/issu
 		const q = {
 			type: 'toggle',
 			name: 'inspector',
-			message: 'Enable Svelte-Kit experimental inspector?',
+			message: 'Enable Svelte-Kit experimental inspector http://bit.ly/3Hu0BGf ?',
 			initial: false,
 			active: 'Yes',
 			inactive: 'No'
