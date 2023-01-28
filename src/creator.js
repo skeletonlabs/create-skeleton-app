@@ -169,7 +169,7 @@ async function createVSCodeSettings() {
 		const data = await got('https://raw.githubusercontent.com/skeletonlabs/skeleton/dev/scripts/tw-settings.json').text()
 		return data
 	} catch (error) {
-		console.error('Unable to download settings file for VSCode, please read manual instructions at https://skeleton.dev')
+		console.error('Unable to download settings file for VSCode, please read manual instructions at https://skeleton.dev/guides/install')
 	}
 }
 
@@ -266,5 +266,6 @@ function copyTemplate(opts) {
 }
 
 function out(filename, data) {
+	if (data == undefined) return
 	fs.writeFileSync(filename, data);
 }
