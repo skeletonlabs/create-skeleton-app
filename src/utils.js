@@ -1,4 +1,5 @@
 import { fileURLToPath } from 'url';
+import { cancel, isCancel } from '@clack/prompts';
 import path from 'path';
 import fs from 'fs'
 
@@ -37,6 +38,13 @@ export function dist(pathToFind) {
   // console.log('Requested:', pathToFind);
   // console.log('resolved:', res);
   return res;
+}
+
+export function goodbye(option) {
+  if (isCancel(option)) {
+    cancel('Install cancelled, nothing written to disk');
+    process.exit(0);
+  }
 }
 
 export function getHelpText() {

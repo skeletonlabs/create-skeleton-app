@@ -2,12 +2,23 @@
 import { SkeletonOptions, createSkeleton } from './creator.js';
 import fs from 'fs-extra';
 import mri from 'mri';
-import prompts from 'prompts';
 import { bold, cyan, gray, grey, red } from 'kleur/colors';
-import { dist, getHelpText } from './utils.js';
+import { intro, outro, text, select, multiselect, spinner, confirm, cancel, isCancel } from '@clack/prompts';
+import events from 'events'
+import { dist, getHelpText, goodbye } from './utils.js';
 import path from 'path';
+import semver from 'semver';
+// Minimum version required for Svelte Kit
+const requiredVersion = '16.14.0';
 
 async function main() {
+	if (semver.lt(process.version, requiredVersion)) {
+		console.error(`You need to be running Node ${requiredVersion} to use Svelte Kit`)
+		process.exit(1)
+	}
+	// This is required to handle spawning processes
+	events.EventEmitter.defaultMaxListeners = 15;
+
 	// grab any passed arguments from the command line
 	const startPath = process.cwd()
 	let opts = await parseArgs();
@@ -23,8 +34,10 @@ async function main() {
 	}
 
 	// Now that we have all of the options, lets create it.
+	const s = spinner()
+	s.start("Installing")
 	await createSkeleton(opts);
-
+	s.stop("Done installing")
 	// And give the user some final information on what to do Next
 	if (!(opts?.quiet)) {
 		const pm = opts.packagemanager;
@@ -91,6 +104,8 @@ async function parseArgs() {
 
 export async function askForMissingParams(opts) {
 	// prettier-ignore
+	intro(`Create Skeleton App`)
+	
 	const disclaimer = `
 ${bold(cyan('Welcome to Skeleton 💀! A UI tookit for Svelte + Tailwind'))}
 
@@ -111,130 +126,102 @@ Problems? Open an issue on ${cyan('https://github.com/skeletonlabs/skeleton/issu
 	//NOTE: When doing checks here, make sure to test for the presence of the prop, not the prop value as it may be set to false deliberately.
 
 	if (!('name' in opts)) {
-		questions.push({
-			type: 'text',
-			name: 'name',
-			message: 'Name for your new project:',
+		opts.name = await text({
+			message: "Name for your new project:?",
+			placeholder: "my-app",
+			validate(value) {
+				if (value.length === 0) return `App name is required!`;
+			},
 		});
+		goodbye(opts.name)
 	}
 
 	if (!('types' in opts)) {
-		const q = {
-			type: 'select',
-			name: 'types',
+		opts.types = await select({
 			message: 'Add type checking with TypeScript?',
-			initial: false,
-			choices: [
+			options: [
 				{
-					title: 'Yes, using JavaScript with JSDoc comments',
-					value: 'checkjs',
-				},
-				{
-					title: 'Yes, using TypeScript syntax',
+					label: 'Yes, using TypeScript syntax',
 					value: 'typescript',
 				},
-				{ title: 'No', value: null },
-			],
-		};
-		questions.push(q);
+				{
+					label: 'Yes, using JavaScript with JSDoc comments',
+					value: 'checkjs',
+				},
+				{ label: 'No', value: null },
+			]
+		})
+		goodbye(opts.type)
 	}
 
 	if (!('eslint' in opts)) {
-		const q = {
-			type: 'toggle',
-			name: 'eslint',
-			message: 'Add ESLint for code linting?',
-			initial: false,
-			active: 'Yes',
-			inactive: 'No',
-		};
-		questions.push(q);
+		opts.eslint = await confirm({
+			message: 'Add ESLint for code linting?'
+		});
+		goodbye(opts.eslint)
 	}
 
 	if (!('prettier' in opts)) {
-		const q = {
-			type: 'toggle',
-			name: 'prettier',
-			message: 'Add Prettier for code formatting?',
-			initial: false,
-			active: 'Yes',
-			inactive: 'No',
-		};
-		questions.push(q);
+		opts.prettier = await confirm({ message: 'Add Prettier for code formatting ?' });
+		goodbye(opts.prettier)
 	}
 
 	if (!('playwright' in opts)) {
-		const q = {
-			type: 'toggle',
-			name: 'playwright',
-			message: 'Add Playwright for browser testing?',
-			initial: false,
-			active: 'Yes',
-			inactive: 'No',
-		};
-		questions.push(q);
+		opts.playwright = await confirm({ message: 'Add Playwright for browser testing ?' });
+		goodbye(opts.playwright)
 	}
 
 	if (!('vitest' in opts)) {
-		const q = {
-			type: 'toggle',
-			name: 'vitest',
-			message: 'Add Vitest for unit testing?',
-			initial: false,
-			active: 'Yes',
-			inactive: 'No'
-		}
-		questions.push(q);
+		opts.vitest = await confirm({ message: 'Add Vitest for unit testing ?' });
+		goodbye(opts.vitest)
 	}
 
-	if (!('inspector' in opts)) {
-		const q = {
-			type: 'toggle',
-			name: 'inspector',
-			message: 'Enable Svelte-Kit experimental inspector http://bit.ly/3Hu0BGf ?',
-			initial: false,
-			active: 'Yes',
-			inactive: 'No'
-		}
-		questions.push(q);
+	// Component Package Selection
+	if (!(['highlightjs', 'floatingui'].every(value => { return Object.keys(opts).includes(value) }))) {
+		const componentPackages = await multiselect({
+			message: "Install component dependencies?",
+			options: [
+				{ value: "highlightjs", label: "CodeBlock (installs highlight.js)",  },
+				{ value: "floatingui", label: "Popups (installs floating-ui)" },
+			],
+			required: false
+		});
+		goodbye(componentPackages)
+		componentPackages.every(value => opts[value] = true)
 	}
 
 	// Tailwind Plugin Selection
 	if (!(['forms', 'typography', 'lineclamp'].every(value => { return Object.keys(opts).includes(value) }))) {
-		const q = {
-			type: 'multiselect',
-			name: 'twplugins',
-			message: 'Pick tailwind plugins to add:',
-
-			choices: [
-				{ title: 'forms', value: 'forms', selected: opts?.forms },
-				{ title: 'typography', value: 'typography', selected: opts?.typography },
-				{ title: 'line-clamp', value: 'lineclamp', selected: opts?.lineclamp },
+		const twplugins = await multiselect({
+			message: "Pick tailwind plugins to add:",
+			options: [
+				{ value: "forms", label: "forms" },
+				{ value: "typography", label: "typography" },
+				{ value: "lineclamp", label: "line-clamp" },
 			],
-		};
-		questions.push(q);
+			required: false
+		});
+		goodbye(opts.twplugins)
+		twplugins.every(value => opts[value] = true)
 	}
 
 	// Skeleton Theme Selection
 	if (!('skeletontheme' in opts)) {
-		const q = {
-			type: 'select',
-			name: 'skeletontheme',
-			message: 'Select a theme:',
-			initial: 0,
-			choices: [
-				{ title: 'Skeleton', value: 'skeleton' },
-				{ title: 'Modern', value: 'modern' },
-				{ title: 'Hamlindigo', value: 'hamlindigo' },
-				{ title: 'Rocket', value: 'rocket' },
-				{ title: 'Sahara', value: 'sahara' },
-				{ title: 'Gold Nouveau', value: 'gold-nouveau' },
-				{ title: 'Vintage', value: 'vintage' },
-				{ title: 'Seafoam', value: 'seafoam' },
-				{ title: 'Crimson', value: 'crimson' },
+		opts.skeletontheme = await select({
+			message: "Select a theme:",
+			options: [
+				{ label: 'Skeleton', value: 'skeleton' },
+				{ label: 'Modern', value: 'modern' },
+				{ label: 'Hamlindigo', value: 'hamlindigo' },
+				{ label: 'Rocket', value: 'rocket' },
+				{ label: 'Sahara', value: 'sahara' },
+				{ label: 'Gold Nouveau', value: 'gold-nouveau' },
+				{ label: 'Vintage', value: 'vintage' },
+				{ label: 'Seafoam', value: 'seafoam' },
+				{ label: 'Crimson', value: 'crimson' },
 			],
-		};
-		questions.push(q);
+		});
+		goodbye(opts.skeletontheme)
 	}
 
 	//Skeleton Template Selection
@@ -244,44 +231,26 @@ Problems? Open an issue on ${cyan('https://github.com/skeletonlabs/skeleton/issu
 		let parsedChoices = [];
 		fs.readdirSync(dist(templateDir)).forEach((dir) => {
 			const meta_file = dist(`${templateDir}/${dir}/meta.json`);
-			const { position, title, description, enabled } = JSON.parse(fs.readFileSync(meta_file, 'utf8'));
+			const { position, label, description, enabled } = JSON.parse(fs.readFileSync(meta_file, 'utf8'));
 			if (enabled) {
 				parsedChoices.push({
 					position,
-					title,
+					label,
 					description,
 					value: dir,
 				});
 			}
 		});
 		parsedChoices.sort((a, b) => a.position - b.position);
-		const q = {
-			type: 'select',
-			name: 'skeletontemplate',
+		opts.skeletontemplate = await select({
 			message: 'Which Skeleton app template?',
-			choices: parsedChoices,
-		};
-		questions.push(q);
+			options: parsedChoices
+		});
+		goodbye(opts.skeletontemplate)
 	}
-
-	const onCancel = () => {
-		console.log('Exiting');
-		process.exit();
-	};
-
-	// Get user responses to missing args
-	//@ts-ignore
-	const response = await prompts(questions, { onCancel });
-
-	//Prompts returns the twplugins as an array, but it makes it easier to use on the command line if they are seperated booleans
-	//We map them out from the array here and delete the now useless twplugins prop before proceeding to overlay the response values onto opts
-	//@ts-ignore
-	if (response.twplugins != undefined) Object.keys(response.twplugins).forEach((index) => (opts[response.twplugins[index]] = true));
-	delete response.twplugins;
-	Object.assign(opts, response);
+	
 	const skelOpts = new SkeletonOptions();
 	Object.assign(skelOpts, opts);
-
 	return skelOpts;
 }
-main();
+await main();

@@ -1,6 +1,6 @@
 {
 	"position": 5,
-	"title": "Bare Bones",
+	"label": "Bare Bones",
 	"description": "A blank slate for you to create your app",
 	"enabled": true
 }

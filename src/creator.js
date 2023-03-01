@@ -33,11 +33,14 @@ export class SkeletonOptions {
 	skeletontheme = 'skeleton';
 	skeletontemplate = 'bare';
 	packagemanager = 'npm';
+	packages = [];
+	highlightjs = false;
+	floatingui = false;
+
 	// props below are private to the Skeleton team
 	verbose = false;
 	monorepo = false;
 	packages = [];
-	skeletonui = true;
 	skeletontemplatedir = '../templates';
 	workspace = '';
 }
@@ -54,13 +57,10 @@ export async function createSkeleton(opts) {
 		process.exit();
 	}
 
-	if (!(opts?.quiet)) {
-		console.log('Working: Creating base SvelteKit install.');
-	}
 	fs.mkdirp(opts.path);
 
 	//create-svelte will build the base install for us
-	create(opts.path, opts);
+	await create(opts.path, opts);
 	process.chdir(opts.path);
 
 	// install packages
@@ -71,17 +71,17 @@ export async function createSkeleton(opts) {
 		'postcss',
 		'autoprefixer',
 		'tailwindcss',
-		'svelte-preprocess',
 		'@skeletonlabs/skeleton',
 	];
 
+	// Tailwind Packages
 	if (opts?.typography) packages.push('@tailwindcss/typography');
 	if (opts?.forms) packages.push('@tailwindcss/forms');
 	if (opts?.lineclamp) packages.push('@tailwindcss/line-clamp');
 
-	if (!(opts?.quiet)) {
-		console.log('Working: Installing project dependencies.');
-	}
+	// Component dependencies
+	if (opts?.highlightjs) packages.push('highlight.js');
+	if (opts?.floatingui) packages.push('@floating-ui/dom');
 
 	let result = spawnSync(opts.packagemanager, ['add', '-D', ...packages], {
 		shell: true,
@@ -93,7 +93,6 @@ export async function createSkeleton(opts) {
 			'The following was reported to stderr - please read carefully to determine whether it actually affects your install:\n')),
 			result?.stderr.toString()
 		);
-		// process.exit();
 	}
 
 	// Just to help with any user error reports
@@ -106,67 +105,20 @@ export async function createSkeleton(opts) {
 
 	// write out config files
 	out('.vscode/settings.json', await createVSCodeSettings());
-	out('svelte.config.js', createSvelteConfig(opts));
 	out('tailwind.config.cjs', createTailwindConfig(opts));
 	out('postcss.config.cjs', createPostCssConfig());
 
-	// add vite.server.fs.allow of skeleton path for sites in monorepo
-	if (opts.monorepo) {
-		createViteConfig(opts)
-	}
-
-	out(
-		path.resolve(process.cwd(), 'src/routes/', '+layout.svelte'),
-		createSvelteKitLayout(opts),
-	);
-	out(
-		path.resolve(process.cwd(), 'src/', 'app.postcss'),
-		'/*place global styles here */',
-	);
-
 	// copy over selected template
 	copyTemplate(opts);
+	// creating the missing lib folder...
 	mkdirp(path.join('src', 'lib'))
 	return opts;
-}
-
-function createSvelteConfig(opts) {
-	let inspectorConfig = ''
-	if (opts.inspector == true) {
-		inspectorConfig = `
-	vitePlugin: {
-		experimental: {
-			inspector: {
-				holdMode: true,
-			}
-		}
-	}		
-`
-	}
-	const str = `import adapter from '@sveltejs/adapter-auto';
-import { vitePreprocess } from '@sveltejs/kit/vite';
-
-/** @type {import('@sveltejs/kit').Config} */
-const config = {
-	kit: {
-		adapter: adapter()
-	},
-	preprocess: [
-		vitePreprocess({
-			postcss: true
-		})
-	],${inspectorConfig}
-};
-
-export default config;
-`;
-	return str;
 }
 
 async function createVSCodeSettings() {
 	try {
 		mkdirp('.vscode')
-		const data = await got('https://raw.githubusercontent.com/skeletonlabs/skeleton/dev/scripts/tw-settings.json').text()
+		const data = await got('https://raw.githubusercontent.com/skeletonlabs/skeleton/master/scripts/tw-settings.json').text()
 		return data
 	} catch (error) {
 		console.error('Unable to download settings file for VSCode, please read manual instructions at https://skeleton.dev/guides/install')
@@ -204,39 +156,6 @@ function createPostCssConfig() {
 }`;
 	return str;
 }
-// TODO - this is for monorepos only, need to see everything that needs to be modified for monorepos
-// currently packages are automatically added as a workspace reference if in a mono
-function createViteConfig(opts) {
-
-	let filename = '';
-	if (opts.types == 'typescript') {
-		filename = 'vite.config.ts'
-	} else {
-		filename = 'vite.config.js'
-	}
-	let vite = fs.readFileSync(filename)
-	const insertString = `,
-	server: {
-		fs: {
-			allow: ['../../packages/skeleton/']
-		}
-	}`
-	const token = 'kit()]'
-	const insertPoint = vite.indexOf(token) + token.length
-	const str = vite.slice(0, insertPoint) + insertString + vite.slice(insertPoint)
-	fs.writeFileSync(filename, str)
-}
-
-
-function createSvelteKitLayout(opts) {
-	const str = `<script${opts.types == 'typescript' ? ` lang='ts'` : ''}>
-	import '@skeletonlabs/skeleton/themes/theme-${opts.skeletontheme}.css';
-	import '@skeletonlabs/skeleton/styles/all.css';
-	import '../app.postcss';
-</script>
-<slot/>`;
-	return str;
-}
 
 function copyTemplate(opts) {
 	const src = path.resolve(
@@ -252,11 +171,32 @@ function copyTemplate(opts) {
 		encoding: 'utf8',
 		flag: 'r',
 	});
-	const reg = /theme-.*\.css';$/gim;
-	fs.writeFileSync(
-		'./src/routes/+layout.svelte',
-		content.replace(reg, `theme-${opts.skeletontheme}.css';`),
-	);
+	const themeReg = /theme-.*\.css';$/gim;
+	content = content.replace(themeReg, `theme-${opts.skeletontheme}.css';`);
+	content = (opts.types === "typescript" ? "<script lang='ts'>" : "<script>") + content.substring(content.indexOf('\n'));
+
+	const scriptEndReg = /<\/script>/g;
+	if (opts?.highlightjs) {
+		content = content.replace(scriptEndReg, `
+	// Highlight JS
+	import hljs from 'highlight.js';
+	import 'highlight.js/styles/github-dark.css';
+	import { storeHighlightJs } from '@skeletonlabs/skeleton';
+	storeHighlightJs.set(hljs);
+</script>`);
+	}
+
+	if (opts?.highlightjs) {
+		content = content.replace(scriptEndReg, `
+	// Floating UI for Popups
+	import { computePosition, autoUpdate, flip, shift, offset, arrow } from '@floating-ui/dom';
+	import { storePopup } from '@skeletonlabs/skeleton';
+	storePopup.set({ computePosition, autoUpdate, flip, shift, offset, arrow });
+</script>`);
+	}
+
+	fs.writeFileSync('./src/routes/+layout.svelte', content);
+	
 	// update the <body> to have the data-theme
 	content = fs.readFileSync('./src/app.html', { encoding: 'utf8', flag: 'r' });
 	fs.writeFileSync(
