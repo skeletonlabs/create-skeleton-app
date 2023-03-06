@@ -104,22 +104,14 @@ async function parseArgs() {
 
 export async function askForMissingParams(opts) {
 	// prettier-ignore
-	intro(`Create Skeleton App`)
-	
-	const disclaimer = `
-${bold(cyan('Welcome to Skeleton 💀! A UI tookit for Svelte + Tailwind'))}
-
-${bold(red('This is BETA software; expect bugs and missing features.'))}
-
-Problems? Open an issue on ${cyan('https://github.com/skeletonlabs/skeleton/issues')} if none exists already.
-`;
-
 	const { version } = JSON.parse(
 		fs.readFileSync(dist('../package.json'), 'utf-8'),
 	);
 
-	console.log(gray(`\ncreate-skeleton-app version ${version}`));
-	console.log(disclaimer);
+	intro(`Create Skeleton App ${gray(`(version ${version})`)}
+${bold(cyan('Welcome to Skeleton 💀! A UI tookit for Svelte + Tailwind'))}
+
+Problems? Open an issue on ${cyan('https://github.com/skeletonlabs/skeleton/issues')} if none exists already.`)
 
 	const questions = [];
 
