@@ -61,6 +61,9 @@ Option              Short   Quiet Default   Values                      Descript
 --prettier                  true            true|false                  Whether Prettier is added
 --eslint                    true            true|false                  Whether ESLint is added
 --playwright                false           true|false                  Whether Playwright is added
+--vitest                    false           true|false                  Whether Vitest is added
+--codeblocks                false           true|false                  Install codeblock optional dependencies
+--popups                    true            true|false                  Install popups dependencies
 --inspector                 false           true|false                  Whether to activate the inspector
 --path              -p      ''              relative or absolute path   Location to install, name is appended
 --forms                     false           true|false                  Add Tailwinds Forms plugin

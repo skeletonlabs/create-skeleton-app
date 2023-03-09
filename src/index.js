@@ -16,6 +16,7 @@ async function main() {
 		console.error(`You need to be running Node ${requiredVersion} to use Svelte Kit`)
 		process.exit(1)
 	}
+
 	// This is required to handle spawning processes
 	events.EventEmitter.defaultMaxListeners = 15;
 
@@ -79,11 +80,13 @@ async function parseArgs() {
 			'prettier',
 			'eslint',
 			'playwright',
+			'vitest',
+			'codeblocks',
+			'popups',
 			'forms',
 			'typography',
 			'lineclamp',
 			'verbose',
-			'vitest',
 			'inspector'
 		],
 	});
@@ -109,6 +112,7 @@ export async function askForMissingParams(opts) {
 	);
 
 	intro(`Create Skeleton App ${gray(`(version ${version})`)}
+	
 ${bold(cyan('Welcome to Skeleton 💀! A UI tookit for Svelte + Tailwind'))}
 
 Problems? Open an issue on ${cyan('https://github.com/skeletonlabs/skeleton/issues')} if none exists already.`)
@@ -169,12 +173,12 @@ Problems? Open an issue on ${cyan('https://github.com/skeletonlabs/skeleton/issu
 	}
 
 	// Component Package Selection
-	if (!(['highlightjs', 'floatingui'].every(value => { return Object.keys(opts).includes(value) }))) {
+	if (!(['codeblocks', 'popups'].every(value => { return Object.keys(opts).includes(value) }))) {
 		const componentPackages = await multiselect({
-			message: "Install component dependencies?",
+			message: "Install component dependencies:",
 			options: [
-				{ value: "highlightjs", label: "CodeBlock (installs highlight.js)",  },
-				{ value: "floatingui", label: "Popups (installs floating-ui)" },
+				{ value: "codeblocks", label: "CodeBlock (installs highlight.js)",  },
+				{ value: "popups", label: "Popups (installs floating-ui)" },
 			],
 			required: false
 		});
@@ -222,7 +226,7 @@ Problems? Open an issue on ${cyan('https://github.com/skeletonlabs/skeleton/issu
 		const templateDir = opts.skeletontemplatedir || '../templates';
 		let parsedChoices = [];
 		fs.readdirSync(dist(templateDir)).forEach((dir) => {
-			const meta_file = dist(`${templateDir}/${dir}/meta.json`);
+			const meta_file = dist(`${templateDir}/${dir}/csa-meta.json`);
 			const { position, label, description, enabled } = JSON.parse(fs.readFileSync(meta_file, 'utf8'));
 			if (enabled) {
 				parsedChoices.push({

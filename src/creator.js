@@ -20,7 +20,6 @@ export class SkeletonOptions {
 	eslint = true;
 	playwright = false;
 	vitest = false;
-	inspector = false;
 
 	// create-skeleton-app additions
 	_ = []; //catch all for extraneous params from mri, used to capture project name.
@@ -34,8 +33,8 @@ export class SkeletonOptions {
 	skeletontemplate = 'bare';
 	packagemanager = 'npm';
 	packages = [];
-	highlightjs = false;
-	floatingui = false;
+	codeblocks = false;
+	popups = true;
 
 	// props below are private to the Skeleton team
 	verbose = false;
