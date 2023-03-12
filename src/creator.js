@@ -103,6 +103,7 @@ export async function createSkeleton(opts) {
 	}
 
 	// write out config files
+	out("svelte.config.js", createSvelteConfig());
 	out('.vscode/settings.json', await createVSCodeSettings());
 	out('tailwind.config.cjs', createTailwindConfig(opts));
 	out('postcss.config.cjs', createPostCssConfig());
@@ -122,6 +123,31 @@ async function createVSCodeSettings() {
 	} catch (error) {
 		console.error('Unable to download settings file for VSCode, please read manual instructions at https://skeleton.dev/guides/install')
 	}
+}
+
+function createSvelteConfig() {
+	// For some reason create-svelte will turn off preprocessing for jsdoc and no type checking
+	// this will break the using of all CSS preprocessing as well, which is undesirable.
+	// Here we will just return the typescript default setup
+	return `import adapter from '@sveltejs/adapter-auto';
+import { vitePreprocess } from '@sveltejs/kit/vite';
+
+/** @type {import('@sveltejs/kit').Config} */
+const config = {
+	// Consult https://kit.svelte.dev/docs/integrations#preprocessors
+	// for more information about preprocessors
+	preprocess: vitePreprocess(),
+
+	kit: {
+		// adapter-auto only supports some environments, see https://kit.svelte.dev/docs/adapter-auto for a list.
+		// If your environment is not supported or you settled on a specific environment, switch out the adapter.
+		// See https://kit.svelte.dev/docs/adapters for more information about adapters.
+		adapter: adapter()
+	}
+};
+
+export default config;
+`
 }
 
 function createTailwindConfig(opts) {
