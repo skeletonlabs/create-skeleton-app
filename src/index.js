@@ -3,8 +3,18 @@ import { SkeletonOptions, createSkeleton } from './creator.js';
 import fs from 'fs-extra';
 import mri from 'mri';
 import { bold, cyan, gray, grey, red } from 'kleur/colors';
-import { intro, outro, text, select, multiselect, spinner, confirm, cancel, isCancel } from '@clack/prompts';
-import events from 'events'
+import {
+	intro,
+	outro,
+	text,
+	select,
+	multiselect,
+	spinner,
+	confirm,
+	cancel,
+	isCancel,
+} from '@clack/prompts';
+import events from 'events';
 import { dist, getHelpText, goodbye } from './utils.js';
 import path from 'path';
 import semver from 'semver';
@@ -13,15 +23,17 @@ const requiredVersion = '16.14.0';
 
 async function main() {
 	if (semver.lt(process.version, requiredVersion)) {
-		console.error(`You need to be running Node ${requiredVersion} to use Svelte Kit`)
-		process.exit(1)
+		console.error(
+			`You need to be running Node ${requiredVersion} to use Svelte Kit`,
+		);
+		process.exit(1);
 	}
 
 	// This is required to handle spawning processes
 	events.EventEmitter.defaultMaxListeners = 15;
 
 	// grab any passed arguments from the command line
-	const startPath = process.cwd()
+	const startPath = process.cwd();
 	let opts = await parseArgs();
 
 	if ('quiet' in opts) {
@@ -35,12 +47,12 @@ async function main() {
 	}
 
 	// Now that we have all of the options, lets create it.
-	const s = spinner()
-	s.start("Installing")
+	const s = spinner();
+	s.start('Installing');
 	await createSkeleton(opts);
-	s.stop("Done installing")
+	s.stop('Done installing');
 	// And give the user some final information on what to do Next
-	if (!(opts?.quiet)) {
+	if (!opts?.quiet) {
 		const pm = opts.packagemanager;
 		let runString = `${pm} dev\n`;
 
@@ -49,10 +61,14 @@ async function main() {
 		}
 		let finalInstructions = bold(cyan(`\nDone! You can now:\n\n`));
 		if (startPath != opts.path) {
-			finalInstructions += bold(cyan(`cd ${path.relative(startPath, opts.path)}\n`));
+			finalInstructions += bold(
+				cyan(`cd ${path.relative(startPath, opts.path)}\n`),
+			);
 		}
-		finalInstructions += bold(cyan(runString))
-		finalInstructions += grey(`Need some help or found an issue? Visit us on Discord https://discord.gg/EXqV7W8MtY`);
+		finalInstructions += bold(cyan(runString));
+		finalInstructions += grey(
+			`Need some help or found an issue? Visit us on Discord https://discord.gg/EXqV7W8MtY`,
+		);
 		console.log(finalInstructions);
 	}
 	process.exit();
@@ -87,7 +103,7 @@ async function parseArgs() {
 			'typography',
 			'lineclamp',
 			'verbose',
-			'inspector'
+			'inspector',
 		],
 	});
 
@@ -115,7 +131,9 @@ export async function askForMissingParams(opts) {
 	
 ${bold(cyan('Welcome to Skeleton 💀! A UI tookit for Svelte + Tailwind'))}
 
-Problems? Open an issue on ${cyan('https://github.com/skeletonlabs/skeleton/issues')} if none exists already.`)
+Problems? Open an issue on ${cyan(
+		'https://github.com/skeletonlabs/skeleton/issues',
+	)} if none exists already.`);
 
 	const questions = [];
 
@@ -123,13 +141,13 @@ Problems? Open an issue on ${cyan('https://github.com/skeletonlabs/skeleton/issu
 
 	if (!('name' in opts)) {
 		opts.name = await text({
-			message: "Name for your new project:?",
-			placeholder: "my-app",
+			message: 'Name for your new project:?',
+			placeholder: 'my-app',
 			validate(value) {
 				if (value.length === 0) return `App name is required!`;
 			},
 		});
-		goodbye(opts.name)
+		goodbye(opts.name);
 	}
 
 	if (!('types' in opts)) {
@@ -145,66 +163,83 @@ Problems? Open an issue on ${cyan('https://github.com/skeletonlabs/skeleton/issu
 					value: 'checkjs',
 				},
 				{ label: 'No', value: null },
-			]
-		})
-		goodbye(opts.type)
+			],
+		});
+		goodbye(opts.type);
 	}
 
 	if (!('eslint' in opts)) {
 		opts.eslint = await confirm({
-			message: 'Add ESLint for code linting?'
+			message: 'Add ESLint for code linting?',
 		});
-		goodbye(opts.eslint)
+		goodbye(opts.eslint);
 	}
 
 	if (!('prettier' in opts)) {
-		opts.prettier = await confirm({ message: 'Add Prettier for code formatting ?' });
-		goodbye(opts.prettier)
+		opts.prettier = await confirm({
+			message: 'Add Prettier for code formatting ?',
+		});
+		goodbye(opts.prettier);
 	}
 
 	if (!('playwright' in opts)) {
-		opts.playwright = await confirm({ message: 'Add Playwright for browser testing ?' });
-		goodbye(opts.playwright)
+		opts.playwright = await confirm({
+			message: 'Add Playwright for browser testing ?',
+		});
+		goodbye(opts.playwright);
 	}
 
 	if (!('vitest' in opts)) {
-		opts.vitest = await confirm({ message: 'Add Vitest for unit testing ?' });
-		goodbye(opts.vitest)
+		opts.vitest = await confirm({
+			message: 'Add Vitest for unit testing ?',
+		});
+		goodbye(opts.vitest);
 	}
 
 	// Component Package Selection
-	if (!(['codeblocks', 'popups'].every(value => { return Object.keys(opts).includes(value) }))) {
+	if (
+		!['codeblocks', 'popups'].every((value) => {
+			return Object.keys(opts).includes(value);
+		})
+	) {
 		const componentPackages = await multiselect({
-			message: "Install component dependencies:",
+			message: 'Install component dependencies:',
 			options: [
-				{ value: "codeblocks", label: "CodeBlock (installs highlight.js)",  },
-				{ value: "popups", label: "Popups (installs floating-ui)" },
+				{
+					value: 'codeblocks',
+					label: 'CodeBlock (installs highlight.js)',
+				},
+				{ value: 'popups', label: 'Popups (installs floating-ui)' },
 			],
-			required: false
+			required: false,
 		});
-		goodbye(componentPackages)
-		componentPackages.every(value => opts[value] = true)
+		goodbye(componentPackages);
+		componentPackages.every((value) => (opts[value] = true));
 	}
 
 	// Tailwind Plugin Selection
-	if (!(['forms', 'typography', 'lineclamp'].every(value => { return Object.keys(opts).includes(value) }))) {
+	if (
+		!['forms', 'typography', 'lineclamp'].every((value) => {
+			return Object.keys(opts).includes(value);
+		})
+	) {
 		const twplugins = await multiselect({
-			message: "Pick tailwind plugins to add:",
+			message: 'Pick tailwind plugins to add:',
 			options: [
-				{ value: "forms", label: "forms" },
-				{ value: "typography", label: "typography" },
-				{ value: "lineclamp", label: "line-clamp" },
+				{ value: 'forms', label: 'forms' },
+				{ value: 'typography', label: 'typography' },
+				{ value: 'lineclamp', label: 'line-clamp' },
 			],
-			required: false
+			required: false,
 		});
-		goodbye(opts.twplugins)
-		twplugins.every(value => opts[value] = true)
+		goodbye(opts.twplugins);
+		twplugins.every((value) => (opts[value] = true));
 	}
 
 	// Skeleton Theme Selection
 	if (!('skeletontheme' in opts)) {
 		opts.skeletontheme = await select({
-			message: "Select a theme:",
+			message: 'Select a theme:',
 			options: [
 				{ label: 'Skeleton', value: 'skeleton' },
 				{ label: 'Modern', value: 'modern' },
@@ -217,7 +252,7 @@ Problems? Open an issue on ${cyan('https://github.com/skeletonlabs/skeleton/issu
 				{ label: 'Crimson', value: 'crimson' },
 			],
 		});
-		goodbye(opts.skeletontheme)
+		goodbye(opts.skeletontheme);
 	}
 
 	//Skeleton Template Selection
@@ -227,7 +262,9 @@ Problems? Open an issue on ${cyan('https://github.com/skeletonlabs/skeleton/issu
 		let parsedChoices = [];
 		fs.readdirSync(dist(templateDir)).forEach((dir) => {
 			const meta_file = dist(`${templateDir}/${dir}/csa-meta.json`);
-			const { position, label, description, enabled } = JSON.parse(fs.readFileSync(meta_file, 'utf8'));
+			const { position, label, description, enabled } = JSON.parse(
+				fs.readFileSync(meta_file, 'utf8'),
+			);
 			if (enabled) {
 				parsedChoices.push({
 					position,
@@ -240,11 +277,11 @@ Problems? Open an issue on ${cyan('https://github.com/skeletonlabs/skeleton/issu
 		parsedChoices.sort((a, b) => a.position - b.position);
 		opts.skeletontemplate = await select({
 			message: 'Which Skeleton app template?',
-			options: parsedChoices
+			options: parsedChoices,
 		});
-		goodbye(opts.skeletontemplate)
+		goodbye(opts.skeletontemplate);
 	}
-	
+
 	const skelOpts = new SkeletonOptions();
 	Object.assign(skelOpts, opts);
 	return skelOpts;

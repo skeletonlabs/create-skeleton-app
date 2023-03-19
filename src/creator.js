@@ -6,7 +6,7 @@ import fs from 'fs-extra';
 import path from 'path';
 import { dist, whichPMRuns, mkdirp } from './utils.js';
 import { bold, red, cyan } from 'kleur/colors';
-import got from 'got'
+import got from 'got';
 
 // NOTE: Any changes here must also be reflected in the --help output in utils.js and shortcut expansions in index.js.
 // Probably a good idea to do a search on the values you are changing to catch any other areas they are used in
@@ -88,9 +88,13 @@ export async function createSkeleton(opts) {
 
 	// Capture any errors from stderr and display for the user to report it to us
 	if (result?.stderr.toString().length) {
-		console.log(red(bold(
-			'The following was reported to stderr - please read carefully to determine whether it actually affects your install:\n')),
-			result?.stderr.toString()
+		console.log(
+			red(
+				bold(
+					'The following was reported to stderr - please read carefully to determine whether it actually affects your install:\n',
+				),
+			),
+			result?.stderr.toString(),
 		);
 	}
 
@@ -103,7 +107,7 @@ export async function createSkeleton(opts) {
 	}
 
 	// write out config files
-	out("svelte.config.js", createSvelteConfig());
+	out('svelte.config.js', createSvelteConfig());
 	out('.vscode/settings.json', await createVSCodeSettings());
 	out('tailwind.config.cjs', createTailwindConfig(opts));
 	out('postcss.config.cjs', createPostCssConfig());
@@ -111,17 +115,21 @@ export async function createSkeleton(opts) {
 	// copy over selected template
 	copyTemplate(opts);
 	// creating the missing lib folder...
-	mkdirp(path.join('src', 'lib'))
+	mkdirp(path.join('src', 'lib'));
 	return opts;
 }
 
 async function createVSCodeSettings() {
 	try {
-		mkdirp('.vscode')
-		const data = await got('https://raw.githubusercontent.com/skeletonlabs/skeleton/master/scripts/tw-settings.json').text()
-		return data
+		mkdirp('.vscode');
+		const data = await got(
+			'https://raw.githubusercontent.com/skeletonlabs/skeleton/master/scripts/tw-settings.json',
+		).text();
+		return data;
 	} catch (error) {
-		console.error('Unable to download settings file for VSCode, please read manual instructions at https://skeleton.dev/guides/install')
+		console.error(
+			'Unable to download settings file for VSCode, please read manual instructions at https://skeleton.dev/guides/install',
+		);
 	}
 }
 
@@ -147,7 +155,7 @@ const config = {
 };
 
 export default config;
-`
+`;
 }
 
 function createTailwindConfig(opts) {
@@ -157,7 +165,9 @@ function createTailwindConfig(opts) {
 		plugins.push(`require('@tailwindcss/typography')`);
 	if (opts.lineclamp == true)
 		plugins.push(`require('@tailwindcss/line-clamp')`);
-	plugins.push(`...require('@skeletonlabs/skeleton/tailwind/skeleton.cjs')()`);
+	plugins.push(
+		`...require('@skeletonlabs/skeleton/tailwind/skeleton.cjs')()`,
+	);
 
 	const str = `/** @type {import('tailwindcss').Config} */
 module.exports = {
@@ -198,32 +208,43 @@ function copyTemplate(opts) {
 	});
 	const themeReg = /theme-.*\.css';$/gim;
 	content = content.replace(themeReg, `theme-${opts.skeletontheme}.css';`);
-	content = (opts.types === "typescript" ? "<script lang='ts'>" : "<script>") + content.substring(content.indexOf('\n'));
+	content =
+		(opts.types === 'typescript' ? "<script lang='ts'>" : '<script>') +
+		content.substring(content.indexOf('\n'));
 
 	const scriptEndReg = /<\/script>/g;
 	if (opts?.highlightjs) {
-		content = content.replace(scriptEndReg, `
+		content = content.replace(
+			scriptEndReg,
+			`
 	// Highlight JS
 	import hljs from 'highlight.js';
 	import 'highlight.js/styles/github-dark.css';
 	import { storeHighlightJs } from '@skeletonlabs/skeleton';
 	storeHighlightJs.set(hljs);
-</script>`);
+</script>`,
+		);
 	}
 
 	if (opts?.highlightjs) {
-		content = content.replace(scriptEndReg, `
+		content = content.replace(
+			scriptEndReg,
+			`
 	// Floating UI for Popups
 	import { computePosition, autoUpdate, flip, shift, offset, arrow } from '@floating-ui/dom';
 	import { storePopup } from '@skeletonlabs/skeleton';
 	storePopup.set({ computePosition, autoUpdate, flip, shift, offset, arrow });
-</script>`);
+</script>`,
+		);
 	}
 
 	fs.writeFileSync('./src/routes/+layout.svelte', content);
-	
+
 	// update the <body> to have the data-theme
-	content = fs.readFileSync('./src/app.html', { encoding: 'utf8', flag: 'r' });
+	content = fs.readFileSync('./src/app.html', {
+		encoding: 'utf8',
+		flag: 'r',
+	});
 	fs.writeFileSync(
 		'./src/app.html',
 		content.replace('<body>', `<body data-theme="${opts.skeletontheme}">`),
@@ -231,6 +252,6 @@ function copyTemplate(opts) {
 }
 
 function out(filename, data) {
-	if (data == undefined) return
+	if (data == undefined) return;
 	fs.writeFileSync(filename, data);
 }

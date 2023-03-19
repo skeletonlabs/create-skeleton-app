@@ -1,57 +1,57 @@
 import { fileURLToPath } from 'url';
 import { cancel, isCancel } from '@clack/prompts';
 import path from 'path';
-import fs from 'fs'
+import fs from 'fs';
 
 export function whichPMRuns() {
-  const userAgent = process.env.npm_config_user_agent;
-  if (!userAgent) {
-    return undefined;
-  }
-  const pmSpec = userAgent.split(' ')[0] || '';
-  const separatorPos = pmSpec.lastIndexOf('/');
-  const name = pmSpec?.substring(0, separatorPos);
-  return {
-    name: name === 'npminstall' ? 'cnpm' : name,
-    version: pmSpec?.substring(separatorPos + 1),
-  };
+	const userAgent = process.env.npm_config_user_agent;
+	if (!userAgent) {
+		return undefined;
+	}
+	const pmSpec = userAgent.split(' ')[0] || '';
+	const separatorPos = pmSpec.lastIndexOf('/');
+	const name = pmSpec?.substring(0, separatorPos);
+	return {
+		name: name === 'npminstall' ? 'cnpm' : name,
+		version: pmSpec?.substring(separatorPos + 1),
+	};
 }
 
 /** @param {string} dir */
 export function mkdirp(dir) {
-  try {
-    fs.mkdirSync(dir, { recursive: true });
-  } catch (e) {
-    if (e.code === 'EEXIST') return;
-    throw e;
-  }
+	try {
+		fs.mkdirSync(dir, { recursive: true });
+	} catch (e) {
+		if (e.code === 'EEXIST') return;
+		throw e;
+	}
 }
 
 export function dist(pathToFind) {
-  let pathAdjust = '';
-  let base = fileURLToPath(new URL(`./`, import.meta.url).href);
-  if (base.endsWith('shared', base.length - 1)) {
-    pathAdjust = '../';
-  }
+	let pathAdjust = '';
+	let base = fileURLToPath(new URL(`./`, import.meta.url).href);
+	if (base.endsWith('shared', base.length - 1)) {
+		pathAdjust = '../';
+	}
 
-  const res = path.resolve(base, pathAdjust, pathToFind);
-  // console.log('Requested:', pathToFind);
-  // console.log('resolved:', res);
-  return res;
+	const res = path.resolve(base, pathAdjust, pathToFind);
+	// console.log('Requested:', pathToFind);
+	// console.log('resolved:', res);
+	return res;
 }
 
 export function goodbye(option) {
-  if (isCancel(option)) {
-    cancel('Install cancelled, nothing written to disk');
-    process.exit(0);
-  }
+	if (isCancel(option)) {
+		cancel('Install cancelled, nothing written to disk');
+		process.exit(0);
+	}
 }
 
 export function getHelpText() {
-  // Must use spaces for adjustments as output can get very wonky with tab output
-  // Why not array of arrays, TBH it's more readable in source like this and easy to edit with column selection etc.
-  // But the advantage would be that padEnd could be adjusted to the console.width... will wait for feedback.
-  return `
+	// Must use spaces for adjustments as output can get very wonky with tab output
+	// Why not array of arrays, TBH it's more readable in source like this and easy to edit with column selection etc.
+	// But the advantage would be that padEnd could be adjusted to the console.width... will wait for feedback.
+	return `
 Option              Short   Quiet Default   Values                      Description
 --help              -h                                                  This help screen
 --quiet             -q                                                  Quiet mode - see below
