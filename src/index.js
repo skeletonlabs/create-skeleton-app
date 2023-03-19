@@ -2,17 +2,14 @@
 import { SkeletonOptions, createSkeleton } from './creator.js';
 import fs from 'fs-extra';
 import mri from 'mri';
-import { bold, cyan, gray, grey, red } from 'kleur/colors';
+import { bold, cyan, gray, grey } from 'kleur/colors';
 import {
 	intro,
-	outro,
 	text,
 	select,
 	multiselect,
 	spinner,
 	confirm,
-	cancel,
-	isCancel,
 } from '@clack/prompts';
 import events from 'events';
 import { dist, getHelpText, goodbye } from './utils.js';
@@ -134,8 +131,6 @@ ${bold(cyan('Welcome to Skeleton 💀! A UI tookit for Svelte + Tailwind'))}
 Problems? Open an issue on ${cyan(
 		'https://github.com/skeletonlabs/skeleton/issues',
 	)} if none exists already.`);
-
-	const questions = [];
 
 	//NOTE: When doing checks here, make sure to test for the presence of the prop, not the prop value as it may be set to false deliberately.
 
@@ -286,4 +281,4 @@ Problems? Open an issue on ${cyan(
 	Object.assign(skelOpts, opts);
 	return skelOpts;
 }
-await main();
+main();

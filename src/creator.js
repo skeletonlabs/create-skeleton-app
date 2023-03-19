@@ -12,36 +12,38 @@ import got from 'got';
 // Probably a good idea to do a search on the values you are changing to catch any other areas they are used in
 
 export class SkeletonOptions {
-	// svelte-create expects these options, do not change the names or values.
-	name = 'new-skel-app';
-	template = 'skeleton';
-	types = 'typescript';
-	prettier = true;
-	eslint = true;
-	playwright = false;
-	vitest = false;
+	constructor() {
+		// svelte-create expects these options, do not change the names or values.
+		this.name = 'new-skel-app';
+		this.template = 'skeleton';
+		this.types = 'typescript';
+		this.prettier = true;
+		this.eslint = true;
+		this.playwright = false;
+		this.vitest = false;
 
-	// create-skeleton-app additions
-	_ = []; //catch all for extraneous params from mri, used to capture project name.
-	help = false;
-	quiet = false;
-	path = '.';
-	forms = false;
-	typography = false;
-	lineclamp = false;
-	skeletontheme = 'skeleton';
-	skeletontemplate = 'bare';
-	packagemanager = 'npm';
-	packages = [];
-	codeblocks = false;
-	popups = true;
+		// create-skeleton-app additions
+		this._ = []; //catch all for extraneous params from mri, used to capture project name.
+		this.help = false;
+		this.quiet = false;
+		this.path = '.';
+		this.forms = false;
+		this.typography = false;
+		this.lineclamp = false;
+		this.skeletontheme = 'skeleton';
+		this.skeletontemplate = 'bare';
+		this.packagemanager = 'npm';
+		this.packages = [];
+		this.codeblocks = false;
+		this.popups = true;
 
-	// props below are private to the Skeleton team
-	verbose = false;
-	monorepo = false;
-	packages = [];
-	skeletontemplatedir = '../templates';
-	workspace = '';
+		// props below are private to the Skeleton team
+		this.verbose = false;
+		this.monorepo = false;
+		this.packages = [];
+		this.skeletontemplatedir = '../templates';
+		this.workspace = '';
+	}
 }
 
 export async function createSkeleton(opts) {
