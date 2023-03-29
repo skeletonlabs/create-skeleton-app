@@ -4,7 +4,7 @@ import process from 'process';
 import { spawnSync } from 'node:child_process';
 import fs from 'fs-extra';
 import path from 'path';
-import { dist, whichPMRuns, mkdirp } from './utils.js';
+import { dist, whichPMRuns, mkdirp, removeFilesExceptSync } from './utils.js';
 import { bold, red, cyan } from 'kleur/colors';
 import got from 'got'
 
@@ -190,6 +190,46 @@ function copyTemplate(opts) {
 
 	fs.copySync(src + '/src', './src', { overwrite: true });
 	fs.copySync(src + '/static', './static', { overwrite: true });
+	
+	// All fonts are in the template static folder, so we need to remove the ones that are not relevant to the theme
+	// and then update the app.postcss file to include the correct font
+	let fontFamily = '';
+	let fontFile = '';
+	switch (opts.skeletontheme) {
+		case 'gold-nouveau':
+		case 'modern':
+		case 'seasonal':
+			fontFamily = 'Quicksand';
+			fontFile = ['Quicksand.ttf'];
+			break;
+		case 'rocket':
+			fontFamily = 'Space Grotesk';
+			fontFile = ['SpaceGrotesk.ttf'];
+			break;
+		case 'seafoam':
+			fontFamily = 'Playfair Display';
+			fontFile = ['PlayfairDisplay-Italic.ttf'];
+			break;
+		case 'vintage':
+			fontFamily = 'Abril Fatface';
+			fontFile = ['AbrilFatface.ttf'];
+			break;
+		default:
+			fontFamily = '';
+			fontFile = '';
+	}
+	if (fontFamily !== '') {
+		fs.appendFileSync('./src/app.postcss',`
+@font-face {
+	font-family: '${fontFamily}';
+	src: url('/fonts/${fontFile}');
+	font-display: swap;
+}`);
+		removeFilesExceptSync( src + '/static/fonts/', fontFile);
+	} else {
+		fs.removeSync('./static/fonts');
+	}
+	
 
 	// patch back in their theme choice - it may have been replaced by the theme template, it may still be the correct auto-genned one, depends on the template - we don't care, this fixes it.
 	let content = fs.readFileSync('./src/routes/+layout.svelte', {

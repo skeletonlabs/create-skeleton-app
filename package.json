@@ -49,6 +49,6 @@
 	"devDependencies": {
 		"eslint": "^8.36.0",
 		"prettier": "^2.8.4",
-		"svelte": "^3.56.0"
+		"svelte": "^3.57.0"
 	}
 }

@@ -10,7 +10,7 @@ specifiers:
   mri: ^1.2.0
   prettier: ^2.8.4
   semver: ^7.3.8
-  svelte: ^3.56.0
+  svelte: ^3.57.0
 
 dependencies:
   '@clack/prompts': 0.6.3
@@ -24,7 +24,7 @@ dependencies:
 devDependencies:
   eslint: 8.36.0
   prettier: 2.8.4
-  svelte: 3.56.0
+  svelte: 3.57.0
 
 packages:
 
@@ -844,8 +844,8 @@ packages:
       has-flag: 4.0.0
     dev: true
 
-  /svelte/3.56.0:
-    resolution: {integrity: sha512-LvXiJbjdvJKwB/0CQyYpDX0q+hFqCyWmybzC2G6eK1tJJA/RSRCytTfNmjHv+RHlLuA70vWG7nXp6gbeErYvRA==}
+  /svelte/3.57.0:
+    resolution: {integrity: sha512-WMXEvF+RtAaclw0t3bPDTUe19pplMlfyKDsixbHQYgCWi9+O9VN0kXU1OppzrB9gPAvz4NALuoca2LfW2bOjTQ==}
     engines: {node: '>= 8'}
     dev: true
 

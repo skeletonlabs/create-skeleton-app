@@ -1,7 +1,7 @@
 import { fileURLToPath } from 'url';
 import { cancel, isCancel } from '@clack/prompts';
 import path from 'path';
-import fs from 'fs'
+import fs from 'fs-extra'
 
 export function whichPMRuns() {
   const userAgent = process.env.npm_config_user_agent;
@@ -35,9 +35,20 @@ export function dist(pathToFind) {
   }
 
   const res = path.resolve(base, pathAdjust, pathToFind);
-  // console.log('Requested:', pathToFind);
-  // console.log('resolved:', res);
   return res;
+}
+
+export function removeFilesExceptSync(directoryPath, filesToKeep) {
+  const files = fs.readdirSync(directoryPath);
+  console.log("Files found:", files);
+  // Remove files that are not in the list of files to keep
+  const filesToRemove = files.filter(file => !filesToKeep.includes(file));
+  console.log("Files to remove:", filesToRemove);
+
+  for (const file of filesToRemove) {
+    const filePath = path.join(directoryPath, file);
+    fs.removeSync(filePath);
+  }
 }
 
 export function goodbye(option) {
