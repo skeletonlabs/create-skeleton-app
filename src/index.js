@@ -192,8 +192,7 @@ Problems? Open an issue on ${cyan('https://github.com/skeletonlabs/skeleton/issu
 			message: "Pick tailwind plugins to add:",
 			options: [
 				{ value: "forms", label: "forms" },
-				{ value: "typography", label: "typography" },
-				{ value: "lineclamp", label: "line-clamp" },
+				{ value: "typography", label: "typography" }
 			],
 			required: false
 		});
