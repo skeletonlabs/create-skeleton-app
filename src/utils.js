@@ -40,11 +40,7 @@ export function dist(pathToFind) {
 
 export function removeFilesExceptSync(directoryPath, filesToKeep) {
   const files = fs.readdirSync(directoryPath);
-  console.log("Files found:", files);
-  // Remove files that are not in the list of files to keep
   const filesToRemove = files.filter(file => !filesToKeep.includes(file));
-  console.log("Files to remove:", filesToRemove);
-
   for (const file of filesToRemove) {
     const filePath = path.join(directoryPath, file);
     fs.removeSync(filePath);

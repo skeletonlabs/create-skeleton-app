@@ -225,7 +225,7 @@ function copyTemplate(opts) {
 	src: url('/fonts/${fontFile}');
 	font-display: swap;
 }`);
-		removeFilesExceptSync( src + '/static/fonts/', fontFile);
+		removeFilesExceptSync( './static/fonts/', fontFile);
 	} else {
 		fs.removeSync('./static/fonts');
 	}
