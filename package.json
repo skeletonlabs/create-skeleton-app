@@ -1,6 +1,6 @@
 {
 	"name": "create-skeleton-app",
-	"version": "0.0.32",
+	"version": "0.0.33",
 	"description": "Use this CLI app to setup a new Skeleton application in a new SvelteKit project.",
 	"keywords": [
 		"skeleton",
@@ -28,7 +28,7 @@
 	},
 	"scripts": {
 		"dev": "node src/index.js",
-		"long": "node src/index.js --types=typescript --prettier --eslint --playwright=false --vitest=false --inspector=false --typography=false --forms=false --lineclamp=false -t crimson --skeletontemplate=welcome",
+		"long": "node src/index.js --types=typescript --prettier --eslint --playwright=false --vitest=false --codeblocks=true --popups=true --typography=false --forms=false -t crimson --skeletontemplate=welcome",
 		"pub:beta": "npm publish --tag beta",
 		"pub:next": "npm publish --tag next",
 		"pub:release": "npm publish",

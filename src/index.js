@@ -185,7 +185,7 @@ Problems? Open an issue on ${cyan('https://github.com/skeletonlabs/skeleton/issu
 	}
 
 	// Tailwind Plugin Selection
-	if (!(['forms', 'typography', 'lineclamp'].every(value => { return Object.keys(opts).includes(value) }))) {
+	if (!(['forms', 'typography'].every(value => { return Object.keys(opts).includes(value) }))) {
 		const twplugins = await multiselect({
 			message: "Pick tailwind plugins to add:",
 			options: [
