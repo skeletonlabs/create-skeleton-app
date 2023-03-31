@@ -85,9 +85,7 @@ async function parseArgs() {
 			'popups',
 			'forms',
 			'typography',
-			'lineclamp',
-			'verbose',
-			'inspector'
+			'verbose'
 		],
 	});
 

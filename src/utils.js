@@ -71,11 +71,9 @@ Option              Short   Quiet Default   Values                      Descript
 --vitest                    false           true|false                  Whether Vitest is added
 --codeblocks                false           true|false                  Install codeblock optional dependencies
 --popups                    true            true|false                  Install popups dependencies
---inspector                 false           true|false                  Whether to activate the inspector
 --path              -p      ''              relative or absolute path   Location to install, name is appended
 --forms                     false           true|false                  Add Tailwinds Forms plugin
 --typography                false           true|false                  Add Tailwinds Typography plugin
---lineclamp                 false           true|false                  Add Tailwinds Lineclamp plugin 
 --skeletontheme     -t      skeleton        skeleton                    Choose one for the Skeleton theme
                                             modern
                                             hamlindigo
