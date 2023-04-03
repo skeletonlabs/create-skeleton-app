@@ -266,7 +266,7 @@ function copyTemplate(opts) {
 	content = fs.readFileSync('./src/app.html', { encoding: 'utf8', flag: 'r' });
 	fs.writeFileSync(
 		'./src/app.html',
-		content.replace('<body>', `<body data-theme="${opts.skeletontheme}">`),
+		content.replace('<body>', `<body data-sveltekit-preload-data="hover" data-theme="${opts.skeletontheme}" `),
 	);
 }
 
