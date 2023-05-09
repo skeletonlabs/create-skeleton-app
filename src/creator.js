@@ -79,8 +79,8 @@ export async function createSkeleton(opts) {
 	if (opts?.lineclamp) packages.push('@tailwindcss/line-clamp');
 
 	// Component dependencies
-	if (opts?.highlightjs) packages.push('highlight.js');
-	if (opts?.floatingui) packages.push('@floating-ui/dom');
+	if (opts?.codeblocks) packages.push('highlight.js');
+	if (opts?.popups) packages.push('@floating-ui/dom');
 
 	let result = spawnSync(opts.packagemanager, ['add', '-D', ...packages], {
 		shell: true,
@@ -190,7 +190,7 @@ function copyTemplate(opts) {
 
 	fs.copySync(src + '/src', './src', { overwrite: true });
 	fs.copySync(src + '/static', './static', { overwrite: true });
-	
+
 	// All fonts are in the template static folder, so we need to remove the ones that are not relevant to the theme
 	// and then update the app.postcss file to include the correct font
 	let fontFamily = '';
@@ -219,17 +219,17 @@ function copyTemplate(opts) {
 			fontFile = '';
 	}
 	if (fontFamily !== '') {
-		fs.appendFileSync('./src/app.postcss',`
+		fs.appendFileSync('./src/app.postcss', `
 @font-face {
 	font-family: '${fontFamily}';
 	src: url('/fonts/${fontFile}');
 	font-display: swap;
 }`);
-		removeFilesExceptSync( './static/fonts/', fontFile);
+		removeFilesExceptSync('./static/fonts/', fontFile);
 	} else {
 		fs.removeSync('./static/fonts');
 	}
-	
+
 
 	// patch back in their theme choice - it may have been replaced by the theme template, it may still be the correct auto-genned one, depends on the template - we don't care, this fixes it.
 	let content = fs.readFileSync('./src/routes/+layout.svelte', {
@@ -261,7 +261,7 @@ function copyTemplate(opts) {
 	}
 
 	fs.writeFileSync('./src/routes/+layout.svelte', content);
-	
+
 	// update the <body> to have the data-theme
 	content = fs.readFileSync('./src/app.html', { encoding: 'utf8', flag: 'r' });
 	fs.writeFileSync(

@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import { SkeletonOptions, createSkeleton } from './creator.js';
+export { SkeletonOptions, createSkeleton }
 import fs from 'fs-extra';
 import mri from 'mri';
 import { bold, cyan, gray, grey, red } from 'kleur/colors';
@@ -62,6 +63,7 @@ async function parseArgs() {
 	const argv = process.argv.slice(2);
 
 	// mri will parse argv and expand any shorthand args.  Accepted args are the literal props of SkelOptions
+	/** @type {SkeletonOptions} */
 	const opts = mri(argv, {
 		alias: {
 			h: 'help',
@@ -102,23 +104,19 @@ async function parseArgs() {
 	}
 	return opts;
 }
-
+/**
+ * @param {SkeletonOptions} opts 
+ */
 export async function askForMissingParams(opts) {
-	// prettier-ignore
-	const { version } = JSON.parse(
-		fs.readFileSync(dist('../package.json'), 'utf-8'),
-	);
+	const { version } = JSON.parse(fs.readFileSync(dist('../package.json'), 'utf-8'));
 
 	intro(`Create Skeleton App ${gray(`(version ${version})`)}
 	
-${bold(cyan('Welcome to Skeleton 💀! A UI tookit for Svelte + Tailwind'))}
+${bold(cyan('Welcome to Skeleton 💀! A UI toolkit for Svelte + Tailwind'))}
 
 Problems? Open an issue on ${cyan('https://github.com/skeletonlabs/skeleton/issues')} if none exists already.`)
 
-	const questions = [];
-
 	//NOTE: When doing checks here, make sure to test for the presence of the prop, not the prop value as it may be set to false deliberately.
-
 	if (!('name' in opts)) {
 		opts.name = await text({
 			message: "Name for your new project:?",
@@ -175,7 +173,7 @@ Problems? Open an issue on ${cyan('https://github.com/skeletonlabs/skeleton/issu
 		const componentPackages = await multiselect({
 			message: "Install component dependencies:",
 			options: [
-				{ value: "codeblocks", label: "CodeBlock (installs highlight.js)",  },
+				{ value: "codeblocks", label: "CodeBlock (installs highlight.js)", },
 				{ value: "popups", label: "Popups (installs floating-ui)" },
 			],
 			required: false
@@ -241,7 +239,7 @@ Problems? Open an issue on ${cyan('https://github.com/skeletonlabs/skeleton/issu
 		});
 		goodbye(opts.skeletontemplate)
 	}
-	
+
 	const skelOpts = new SkeletonOptions();
 	Object.assign(skelOpts, opts);
 	return skelOpts;
