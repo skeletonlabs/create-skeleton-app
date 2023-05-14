@@ -1,12 +1,14 @@
 // Types
 import { create } from 'create-svelte';
-import process from 'process';
-import { spawnSync } from 'node:child_process';
 import fs from 'fs-extra';
+import got from 'got';
+import { bold, cyan, red } from 'kleur/colors';
+import { spawnSync } from 'node:child_process';
 import path from 'path';
-import { dist, whichPMRuns, mkdirp, removeFilesExceptSync } from './utils.js';
-import { bold, red, cyan } from 'kleur/colors';
-import got from 'got'
+import process from 'process';
+import { dist, mkdirp, removeFilesExceptSync, whichPMRuns } from './utils.js';
+import * as url from 'url';
+const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
 
 // NOTE: Any changes here must also be reflected in the --help output in utils.js and shortcut expansions in index.js.
 // Probably a good idea to do a search on the values you are changing to catch any other areas they are used in
@@ -106,11 +108,19 @@ export async function createSkeleton(opts) {
 	}
 
 	// write out config files
-	out("svelte.config.js", createSvelteConfig());
+	out("svelte.config.js", createSvelteConfig(opts));
 	out('.vscode/settings.json', await createVSCodeSettings());
 	out('tailwind.config.cjs', createTailwindConfig(opts));
 	out('postcss.config.cjs', createPostCssConfig());
 
+	// Monorepo additions
+	if (opts?.monorepo) {
+		fs.copySync(__dirname + '../README-MONO.md', process.cwd() + '/README.md', { overwrite: true });
+		let pkg = JSON.parse(fs.readFileSync('package.json'));
+		pkg.scripts['deploy'] = 'vercel build && vercel deploy --prebuilt';
+		pkg.scripts['prod'] = 'vercel build --prod && vercel deploy --prebuilt --prod';
+		fs.writeFileSync('package.json', JSON.stringify(pkg, null, 2));
+	}
 	// copy over selected template
 	copyTemplate(opts);
 	// creating the missing lib folder...
@@ -128,13 +138,14 @@ async function createVSCodeSettings() {
 	}
 }
 
-function createSvelteConfig() {
+function createSvelteConfig(opts) {
 	// For some reason create-svelte will turn off preprocessing for jsdoc and no type checking
 	// this will break the using of all CSS preprocessing as well, which is undesirable.
 	// Here we will just return the typescript default setup
-	return `import adapter from '@sveltejs/adapter-auto';
-import { vitePreprocess } from '@sveltejs/kit/vite';
-
+	let str = `import adapter from '@sveltejs/adapter-auto';
+import { vitePreprocess } from '@sveltejs/kit/vite';`
+	if (opts?.monorepo) { str += `\nimport path from 'path';` }
+	str += `
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
 	// Consult https://kit.svelte.dev/docs/integrations#preprocessors
@@ -145,21 +156,25 @@ const config = {
 		// adapter-auto only supports some environments, see https://kit.svelte.dev/docs/adapter-auto for a list.
 		// If your environment is not supported or you settled on a specific environment, switch out the adapter.
 		// See https://kit.svelte.dev/docs/adapters for more information about adapters.
-		adapter: adapter()
+		adapter: adapter()`;
+	if (opts?.monorepo) {
+		str += `,
+		alias: {
+			'@skeletonlabs/skeleton': path.resolve('../../packages/skeleton/src/lib')
+		}`
+	}
+	str += `
 	}
 };
-
-export default config;
-`
-}
+export default config;`
+	return str;
+};
 
 function createTailwindConfig(opts) {
 	let plugins = [];
 	if (opts.forms == true) plugins.push(`require('@tailwindcss/forms')`);
 	if (opts.typography == true)
 		plugins.push(`require('@tailwindcss/typography')`);
-	if (opts.lineclamp == true)
-		plugins.push(`require('@tailwindcss/line-clamp')`);
 	plugins.push(`...require('@skeletonlabs/skeleton/tailwind/skeleton.cjs')()`);
 
 	const str = `/** @type {import('tailwindcss').Config} */
