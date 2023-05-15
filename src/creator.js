@@ -74,8 +74,10 @@ export async function createSkeleton(opts) {
 		'postcss',
 		'autoprefixer',
 		'tailwindcss',
-		'@sveltejs/adapter-vercel'
+		
 	];
+	if (!opts.monorepo) packages.push('@skeletonlabs/skeleton')
+	if (opts?.monorepo) packages.push('@sveltejs/adapter-vercel')
 
 	// Tailwind Packages
 	if (opts?.typography) packages.push('@tailwindcss/typography');
@@ -90,6 +92,8 @@ export async function createSkeleton(opts) {
 		shell: true,
 	});
 
+	if (opts?.monorepo) spawnSync('pnpm', ['-F', opts?.name, `exec`, `pnpm`, `i`, `-D`, `@skeletonlabs/skeleton@latest`, `--workspace`])
+	
 	// Capture any errors from stderr and display for the user to report it to us
 	if (result?.stderr.toString().length) {
 		console.log(red(bold(
