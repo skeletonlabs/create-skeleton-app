@@ -82,7 +82,6 @@ export async function createSkeleton(opts) {
 	// Tailwind Packages
 	if (opts?.typography) packages.push('@tailwindcss/typography');
 	if (opts?.forms) packages.push('@tailwindcss/forms');
-	if (opts?.lineclamp) packages.push('@tailwindcss/line-clamp');
 
 	// Component dependencies
 	if (opts?.codeblocks) packages.push('highlight.js');
