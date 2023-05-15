@@ -172,15 +172,26 @@ export default config;`
 
 function createTailwindConfig(opts) {
 	let plugins = [];
-	if (opts.forms == true) plugins.push(`require('@tailwindcss/forms')`);
-	if (opts.typography == true)
-		plugins.push(`require('@tailwindcss/typography')`);
-	plugins.push(`...require('@skeletonlabs/skeleton/tailwind/skeleton.cjs')()`);
+	let pluginImports = [];
+	
+	if (opts.forms == true) {
+		pluginImports.push(`import forms from '@tailwindcss/forms'`);
+		plugins.push(`forms`);
+	}
+	if (opts.typography == true) {
+		pluginImports.push(`import forms from '@tailwindcss/typography'`);
+		plugins.push(`typography`);
+	}
+	pluginImports.push(`import skeleton from '@skeletonlabs/skeleton/tailwind/skeleton.cjs'`);
+	plugins.push(`...skeleton()`);
 
-	const str = `/** @type {import('tailwindcss').Config} */
+	const str = `import { join } from 'path'
+${pluginImports.join('\n')}
+
+/** @type {import('tailwindcss').Config} */
 module.exports = {
 	darkMode: 'class',
-	content: ['./src/**/*.{html,js,svelte,ts}', require('path').join(require.resolve('@skeletonlabs/skeleton'), '../**/*.{html,js,svelte,ts}')],
+	content: ['./src/**/*.{html,js,svelte,ts}', join(require.resolve('@skeletonlabs/skeleton'), '../**/*.{html,js,svelte,ts}')],
 	theme: {
 		extend: {},
 	},
