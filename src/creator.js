@@ -76,7 +76,11 @@ export async function createSkeleton(opts) {
 		'tailwindcss'
 	];
 	// Monorepo Packages - alias will be inserted for Vite to find Skeleton
-	if (!opts?.monorepo) packages.push('@skeletonlabs/skeleton');
+	if (opts?.monorepo) {
+		packages.push('@sveltejs/adapter-vercel');
+	}else{
+		packages.push('@skeletonlabs/skeleton');
+	} 
 
 	// Tailwind Packages
 	if (opts?.typography) packages.push('@tailwindcss/typography');
@@ -117,7 +121,7 @@ export async function createSkeleton(opts) {
 	if (opts?.monorepo) {
 		fs.copySync(__dirname + '../README-MONO.md', process.cwd() + '/README.md', { overwrite: true });
 		let pkg = JSON.parse(fs.readFileSync('package.json'));
-		pkg.scripts['deploy'] = 'vercel build && vercel deploy --prebuilt';
+		pkg.scripts['dep'] = 'vercel build && vercel deploy --prebuilt';
 		pkg.scripts['prod'] = 'vercel build --prod && vercel deploy --prebuilt --prod';
 		fs.writeFileSync('package.json', JSON.stringify(pkg, null, 2));
 	}
@@ -142,8 +146,13 @@ function createSvelteConfig(opts) {
 	// For some reason create-svelte will turn off preprocessing for jsdoc and no type checking
 	// this will break the using of all CSS preprocessing as well, which is undesirable.
 	// Here we will just return the typescript default setup
-	let str = `import adapter from '@sveltejs/adapter-auto';
-import { vitePreprocess } from '@sveltejs/kit/vite';`
+	let str = ""; 
+	if (opts?.monorepo) {
+		str += `import adapter from '@sveltejs/adapter-vercel';\n`
+	} else {
+		str += `import adapter from '@sveltejs/adapter-auto';\n`
+	}
+	str +=`import { vitePreprocess } from '@sveltejs/kit/vite';`
 	if (opts?.monorepo) { str += `\nimport path from 'path';` }
 	str += `
 /** @type {import('@sveltejs/kit').Config} */
