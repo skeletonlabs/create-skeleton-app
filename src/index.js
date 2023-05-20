@@ -27,7 +27,8 @@ async function main() {
 
 	// test the path to make sure it is safe to install
 	if (opts.path === undefined) opts.path = process.cwd();
-	(opts.name = opts.name.replace(/\s+/g, '-').toLowerCase()), (opts.path = path.resolve(opts.path, opts.name));
+	opts.name = opts.name.replace(/\s+/g, '-').toLowerCase()
+	opts.path = path.resolve(opts.path, opts.name);
 
 	checkIfDirSafeToInstall(opts.path);
 
@@ -85,6 +86,7 @@ async function parseArgs() {
 			'quiet',
 			'monorepo',
 			'skeletonui',
+			'library',
 			'prettier',
 			'eslint',
 			'playwright',
