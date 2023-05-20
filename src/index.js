@@ -121,9 +121,8 @@ function checkIfDirSafeToInstall(path) {
 	//lets see whats in there
 	const conflicts = fs
 		.readdirSync(path)
-		.filter((file) => !/^\./.test(file))
 		.filter(
-			(file) => !/^(package.json|svelte.config.js|tailwind.config.cjs|pnpm-lock.yaml|postcss.config.cjs|vite.config.ts)$/.test(file),
+			(file) => /^(package.json|svelte.config.js|tailwind.config.cjs|pnpm-lock.yaml|postcss.config.cjs|vite.config.ts)$/.test(file),
 		);
 
 	if (conflicts.length > 0) {
