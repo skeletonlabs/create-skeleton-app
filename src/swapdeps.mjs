@@ -53,7 +53,7 @@ export function makeVersionedPackageLinks(pkg) {
 			}
 		}
 	}
-	return { pkg: pkg, clean: clean }
+	return { pkg: pkg, clean: clean };
 }
 
 export function swapdeps() {
@@ -73,7 +73,9 @@ export function swapdeps() {
 		case 'h':
 		case '--help':
 		case 'help':
-			console.log('swapdeps [workspace|versioned] or no args for auto-change to versioned if in a CI environment or workspace links if not');
+			console.log(
+				'swapdeps [workspace|versioned] or no args for auto-change to versioned if in a CI environment or workspace links if not',
+			);
 			break;
 		default:
 			if (isCI) {
@@ -85,8 +87,8 @@ export function swapdeps() {
 	}
 	writeFileSync('./package.json', JSON.stringify(pkg, null, 2), 'utf8');
 	if (clean === false) {
-		execSync('pnpm install --no-frozen-lockfile')
+		execSync('pnpm install --no-frozen-lockfile');
 	}
 }
 
-swapdeps()
+swapdeps();

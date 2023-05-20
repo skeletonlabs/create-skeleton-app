@@ -9,7 +9,7 @@
 
 This is the CLI tool for setting up a new Skeleton App that uses [Skeleton](https://skeleton.dev/), [SvelteKit](https://kit.svelte.dev/) and [Tailwind CSS](https://tailwindcss.com/).
 
-`npm create skeleton-app@latest` 
+`npm create skeleton-app@latest`
 
 Is all you need to get started. It also supports using `npm`, `pnpm` and `yarn`.
 
@@ -23,13 +23,11 @@ The `Enable Svelte-Kit experimental inspector?` option allows you to press ctrl-
 
 The Tailwind plugins are purely optional, see their [docs](https://tailwindcss.com/docs/plugins#official-plugins) for more information. You can also use those docs to add the plugins after initially creating your project with the CLI.
 
-
-
 ## 👋 Community
 
-- [Join the Discord](https://discord.gg/EXqV7W8MtY)
-- [Follow on Twitter](https://twitter.com/SkeletonUI)
+-   [Join the Discord](https://discord.gg/EXqV7W8MtY)
+-   [Follow on Twitter](https://twitter.com/SkeletonUI)
 
 ## 🐞 Report an Issue
 
-- [Submit Issue](https://github.com/skeleton/create-skeleton-app/issues/new/choose)
+-   [Submit Issue](https://github.com/skeleton/create-skeleton-app/issues/new/choose)
