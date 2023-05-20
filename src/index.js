@@ -21,6 +21,7 @@ async function main() {
 	// This is required to handle spawning processes
 	events.EventEmitter.defaultMaxListeners = 15;
 
+	const startPath = process.cwd();
 	// grab any passed arguments from the command line
 	let opts = await parseArgs();
 
@@ -113,12 +114,17 @@ async function parseArgs() {
 }
 
 function checkIfDirSafeToInstall(path){
+	// Check if the directory already exists.
+	if (!fs.existsSync(path)) return;
+
+	//lets see whats in there
 	const conflicts = fs
 		.readdirSync(path)
 		.filter((file) => !/^\./.test(file))
 		.filter((file) => !/^(package.json|svelte.config.js|tailwind.config.cjs|pnpm-lock.yaml|postcss.config.cjs|vite.config.ts)$/.test(file));
 
 	if (conflicts.length > 0) {
+		console.log("create-skeleton-app doesn't support updating an existing project, it needs a new empty directory to install into")
 		console.log(`The directory ${path} contains files that could conflict:`);
 		console.log();
 		for (const file of conflicts) {
@@ -165,24 +171,18 @@ Problems? Open an issue on ${cyan('https://github.com/skeletonlabs/skeleton/issu
 		opts.types = await select({
 			message: 'Add type checking with TypeScript?',
 			options: [
-				{
-					label: 'Yes, using TypeScript syntax',
-					value: 'typescript',
-				},
-				{
-					label: 'Yes, using JavaScript with JSDoc comments',
-					value: 'checkjs',
-				},
-				{ label: 'No', value: null },
+				{value: 'typescript', label: 'Yes, using TypeScript syntax'},
+				{value: 'checkjs', label: 'Yes, using JavaScript with JSDoc comments'},
+				{value: null, label: 'No' },
 			]
 		})
 		goodbye(opts.type)
 	}
 
-
+	// Setup dev oriented packages and settings
 	if (!(['eslint', 'prettier', 'playwright', 'vitest', 'inspector'].every(value => { return Object.keys(opts).includes(value) }))) {
 		const optionalInstalls = await multiselect({
-			message: "Install component dependencies:",
+			message: "What would you like setup in your project:",
 			// test opts for which values have been provided and prefill them
 			initialValues: ['eslint', 'prettier', 'playwright', 'vitest', 'inspector'].filter(value => { return Object.keys(opts).includes(value) }),
 			options: [
@@ -198,21 +198,21 @@ Problems? Open an issue on ${cyan('https://github.com/skeletonlabs/skeleton/issu
 		optionalInstalls.every(value => opts[value] = true)
 	}
 
-	// Tailwind Plugin Selection
+	// Additional packages to install
 	if (!(['forms', 'typography', 'codeblocks', 'popups'].every(value => { return Object.keys(opts).includes(value) }))) {
-		const twplugins = await multiselect({
-			message: "Pick tailwind plugins to add:",
+		const packages = await multiselect({
+			message: "What other packages would you like to install:",
 			initialValues: ['forms', 'typography', 'codeblocks', 'popups'].filter(value => { return Object.keys(opts).includes(value) }),
 			options: [
-				{ value: "forms", label: "forms" },
-				{ value: "typography", label: "typography" },
+				{ value: "forms", label: "Tailwind forms" },
+				{ value: "typography", label: "Tailwind typography" },
 				{ value: "codeblocks", label: "Add CodeBlock (installs highlight.js) ?", },
 				{ value: "popups", label: "Add Popups (installs floating-ui) ?" },
 			],
 			required: false
 		});
-		goodbye(opts.twplugins)
-		twplugins.every(value => opts[value] = true)
+		goodbye(packages)
+		packages.every(value => opts[value] = true)
 	}
 
 	// Skeleton Theme Selection

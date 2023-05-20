@@ -3,6 +3,12 @@ import isCI from 'is-ci';
 import { readFileSync, writeFileSync } from 'fs';
 import { execSync } from 'child_process';
 
+// no it can't be run on preinstall
+// no it can't be a nice little npm package
+// yes it's running install twice
+// yes it's a hack
+// but it works (on Vercel at least)
+
 export function makeWorkspacePackageLinks(pkg) {
 	if (pkg?.deployConfig?.dependencies != undefined) {
 		for (const [dep, version] of Object.entries(pkg.deployConfig.dependencies)) {
