@@ -22,9 +22,10 @@ async function main() {
 	events.EventEmitter.defaultMaxListeners = 15;
 
 	// grab any passed arguments from the command line
-	const startPath = process.cwd()
 	let opts = await parseArgs();
 
+	// test the path to make sure it is safe to install
+	if (opts.path === undefined) opts.path = process.cwd();
 	opts.name = opts.name.replace(/\s+/g, '-').toLowerCase(),
 	opts.path = path.resolve(opts.path,	opts.name);
 
