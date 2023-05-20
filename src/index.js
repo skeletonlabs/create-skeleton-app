@@ -146,26 +146,22 @@ Problems? Open an issue on ${cyan('https://github.com/skeletonlabs/skeleton/issu
 		goodbye(opts.type)
 	}
 
-	if (!('eslint' in opts)) {
-		opts.eslint = await confirm({
-			message: 'Add ESLint for code linting?'
+	
+	if (!(['eslint', 'prettier', 'playwright', 'vitest'].every(value => { return Object.keys(opts).includes(value) }))) {
+		const componentPackages = await multiselect({
+			message: "Install component dependencies:",
+			// test opts for which values have been provided and prefill them
+			initialValues: ['eslint', 'prettier', 'playwright', 'vitest'].filter(value => { return Object.keys(opts).includes(value) }),
+			options: [
+				{ value: "eslint", label: 'Add ESLint for code linting?', },
+				{ value: "prettier", label: 'Add Prettier for code formatting ?' },
+				{ value: "playwright", label: 'Add Playwright for browser testing ?' },
+				{ value: "vitest", label: 'Add Vitest for unit testing ?' },
+			],
+			required: false
 		});
-		goodbye(opts.eslint)
-	}
-
-	if (!('prettier' in opts)) {
-		opts.prettier = await confirm({ message: 'Add Prettier for code formatting ?' });
-		goodbye(opts.prettier)
-	}
-
-	if (!('playwright' in opts)) {
-		opts.playwright = await confirm({ message: 'Add Playwright for browser testing ?' });
-		goodbye(opts.playwright)
-	}
-
-	if (!('vitest' in opts)) {
-		opts.vitest = await confirm({ message: 'Add Vitest for unit testing ?' });
-		goodbye(opts.vitest)
+		goodbye(componentPackages)
+		componentPackages.every(value => opts[value] = true)
 	}
 
 	// Component Package Selection

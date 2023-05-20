@@ -74,10 +74,13 @@ export async function createSkeleton(opts) {
 		'postcss',
 		'autoprefixer',
 		'tailwindcss',
-		
+		'@skeletonlabs/skeleton'
 	];
-	if (!opts.monorepo) packages.push('@skeletonlabs/skeleton')
-	if (opts?.monorepo) packages.push('@sveltejs/adapter-vercel')
+	// Extra packages for a monorepo install
+	if (opts?.monorepo){
+		packages.push('@sveltejs/adapter-vercel')
+		packages.push('is-ci')
+	}
 
 	// Tailwind Packages
 	if (opts?.typography) packages.push('@tailwindcss/typography');
@@ -90,8 +93,6 @@ export async function createSkeleton(opts) {
 	let result = spawnSync(opts.packagemanager, ['add', '-D', ...packages], {
 		shell: true,
 	});
-
-	if (opts?.monorepo) spawnSync('pnpm', ['-F', opts?.name, `exec`, `pnpm`, `i`, `-D`, `@skeletonlabs/skeleton@latest`, `--workspace`])
 	
 	// Capture any errors from stderr and display for the user to report it to us
 	if (result?.stderr.toString().length) {
@@ -118,7 +119,10 @@ export async function createSkeleton(opts) {
 	// Monorepo additions
 	if (opts?.monorepo) {
 		fs.copySync(__dirname + '../README-MONO.md', process.cwd() + '/README.md', { overwrite: true });
+		mkdirp('scripts')
+		fs.copySync(__dirname + './swapdeps.mjs', process.cwd() + '/scripts/swapdeps.mjs', { overwrite: true });
 		let pkg = JSON.parse(fs.readFileSync('package.json'));
+		pkg.scripts['preinstall'] = 'node scripts/swapdeps.mjs';
 		pkg.scripts['dep'] = 'vercel build && vercel deploy --prebuilt';
 		pkg.scripts['prod'] = 'vercel build --prod && vercel deploy --prebuilt --prod';
 		fs.writeFileSync('package.json', JSON.stringify(pkg, null, 2));
