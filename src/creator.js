@@ -49,8 +49,6 @@ export class SkeletonOptions {
 }
 
 export async function createSkeleton(opts) {
-	console.log("Path is:", opts.path);
-	console.log("Name is:", opts.name);
 	fs.mkdirp(opts.path);
 
 	// Hidden option to change the install type to be a Svelte-Kit library
