@@ -173,10 +173,7 @@ Problems? Open an issue on ${cyan('https://github.com/skeletonlabs/skeleton/issu
 			message: 'Add type checking with TypeScript?',
 			options: [
 				{ value: 'typescript', label: 'Yes, using TypeScript syntax' },
-				{
-					value: 'checkjs',
-					label: 'Yes, using JavaScript with JSDoc comments',
-				},
+				{ value: 'checkjs', label: 'Yes, using JavaScript with JSDoc comments' },
 				{ value: null, label: 'No' },
 			],
 		});
@@ -197,19 +194,10 @@ Problems? Open an issue on ${cyan('https://github.com/skeletonlabs/skeleton/issu
 			}),
 			options: [
 				{ value: 'eslint', label: 'Add ESLint for code linting?' },
-				{
-					value: 'prettier',
-					label: 'Add Prettier for code formatting ?',
-				},
-				{
-					value: 'playwright',
-					label: 'Add Playwright for browser testing ?',
-				},
+				{ value: 'prettier', label: 'Add Prettier for code formatting ?' },
+				{ value: 'playwright', label: 'Add Playwright for browser testing ?' },
 				{ value: 'vitest', label: 'Add Vitest for unit testing ?' },
-				{
-					value: 'inspector',
-					label: 'Add Svelte Inspector for quick access to your source files from the browser ?',
-				},
+				{ value: 'inspector', label: 'Add Svelte Inspector for quick access to your source files from the browser ?' },
 			],
 			required: false,
 		});
@@ -229,16 +217,10 @@ Problems? Open an issue on ${cyan('https://github.com/skeletonlabs/skeleton/issu
 				return Object.keys(opts).includes(value);
 			}),
 			options: [
-				{ value: 'forms', label: 'Tailwind forms' },
-				{ value: 'typography', label: 'Tailwind typography' },
-				{
-					value: 'codeblocks',
-					label: 'Add CodeBlock (installs highlight.js) ?',
-				},
-				{
-					value: 'popups',
-					label: 'Add Popups (installs floating-ui) ?',
-				},
+				{ value: 'forms', label: 'Add Tailwind forms ?' },
+				{ value: 'typography', label: 'Add Tailwind typography ?' },
+				{ value: 'codeblocks', label: 'Add CodeBlock (installs highlight.js) ?' },
+				{ value: 'popups', label: 'Add Popups (installs floating-ui) ?' },
 			],
 			required: false,
 		});

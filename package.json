@@ -1,6 +1,6 @@
 {
 	"name": "create-skeleton-app",
-	"version": "0.0.38",
+	"version": "0.0.39",
 	"description": "Use this CLI app to setup a new Skeleton application in a new SvelteKit project.",
 	"keywords": [
 		"skeleton",
@@ -46,7 +46,7 @@
 		"semver": "^7.5.1"
 	},
 	"devDependencies": {
-		"eslint": "^8.40.0",
+		"eslint": "^8.41.0",
 		"prettier": "^2.8.8",
 		"svelte": "^3.59.1"
 	}
