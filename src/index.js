@@ -25,6 +25,11 @@ async function main() {
 	const startPath = process.cwd()
 	let opts = await parseArgs();
 
+	opts.name = opts.name.replace(/\s+/g, '-').toLowerCase(),
+	opts.path = path.resolve(opts.path,	opts.name);
+
+	checkIfDirSafeToInstall(opts.path );
+
 	if ('quiet' in opts) {
 		// in quiet mode we prefill the defaults, then overlay the passed options and bypass all of askForMissingParams so that it
 		// doesn't have to constantly check for quietmode all the time.
@@ -83,6 +88,7 @@ async function parseArgs() {
 			'eslint',
 			'playwright',
 			'vitest',
+			'inspector',
 			'codeblocks',
 			'popups',
 			'forms',
@@ -103,6 +109,32 @@ async function parseArgs() {
 		process.exit();
 	}
 	return opts;
+}
+
+function checkIfDirSafeToInstall(path){
+	const conflicts = fs
+		.readdirSync(path)
+		.filter((file) => !/^\./.test(file))
+		.filter((file) => !/^(package.json|svelte.config.js|tailwind.config.cjs|pnpm-lock.yaml|postcss.config.cjs|vite.config.ts)$/.test(file));
+
+	if (conflicts.length > 0) {
+		console.log(`The directory ${path} contains files that could conflict:`);
+		console.log();
+		for (const file of conflicts) {
+			try {
+				const stats = fs.lstatSync(path + '/' + file);
+				if (stats.isDirectory()) {
+					console.log(`  ${red(file)}/`);
+				} else {
+					console.log(`  ${red(file)}`);
+				}
+			} catch {
+				console.log(`  ${red(file)}`);
+			}
+		}
+		console.log('Either try using a new directory name, or remove the files listed above.');
+		process.exit(1);
+	}
 }
 /**
  * @param {SkeletonOptions} opts 
@@ -146,45 +178,35 @@ Problems? Open an issue on ${cyan('https://github.com/skeletonlabs/skeleton/issu
 		goodbye(opts.type)
 	}
 
-	
-	if (!(['eslint', 'prettier', 'playwright', 'vitest'].every(value => { return Object.keys(opts).includes(value) }))) {
-		const componentPackages = await multiselect({
+
+	if (!(['eslint', 'prettier', 'playwright', 'vitest', 'inspector'].every(value => { return Object.keys(opts).includes(value) }))) {
+		const optionalInstalls = await multiselect({
 			message: "Install component dependencies:",
 			// test opts for which values have been provided and prefill them
-			initialValues: ['eslint', 'prettier', 'playwright', 'vitest'].filter(value => { return Object.keys(opts).includes(value) }),
+			initialValues: ['eslint', 'prettier', 'playwright', 'vitest', 'inspector'].filter(value => { return Object.keys(opts).includes(value) }),
 			options: [
 				{ value: "eslint", label: 'Add ESLint for code linting?', },
 				{ value: "prettier", label: 'Add Prettier for code formatting ?' },
 				{ value: "playwright", label: 'Add Playwright for browser testing ?' },
 				{ value: "vitest", label: 'Add Vitest for unit testing ?' },
+				{ value: "inspector", label: 'Add Svelte Inspector for quick access to your source files from the browser ?'}
 			],
 			required: false
 		});
-		goodbye(componentPackages)
-		componentPackages.every(value => opts[value] = true)
-	}
-
-	// Component Package Selection
-	if (!(['codeblocks', 'popups'].every(value => { return Object.keys(opts).includes(value) }))) {
-		const componentPackages = await multiselect({
-			message: "Install component dependencies:",
-			options: [
-				{ value: "codeblocks", label: "CodeBlock (installs highlight.js)", },
-				{ value: "popups", label: "Popups (installs floating-ui)" },
-			],
-			required: false
-		});
-		goodbye(componentPackages)
-		componentPackages.every(value => opts[value] = true)
+		goodbye(optionalInstalls)
+		optionalInstalls.every(value => opts[value] = true)
 	}
 
 	// Tailwind Plugin Selection
-	if (!(['forms', 'typography'].every(value => { return Object.keys(opts).includes(value) }))) {
+	if (!(['forms', 'typography', 'codeblocks', 'popups'].every(value => { return Object.keys(opts).includes(value) }))) {
 		const twplugins = await multiselect({
 			message: "Pick tailwind plugins to add:",
+			initialValues: ['forms', 'typography', 'codeblocks', 'popups'].filter(value => { return Object.keys(opts).includes(value) }),
 			options: [
 				{ value: "forms", label: "forms" },
-				{ value: "typography", label: "typography" }
+				{ value: "typography", label: "typography" },
+				{ value: "codeblocks", label: "Add CodeBlock (installs highlight.js) ?", },
+				{ value: "popups", label: "Add Popups (installs floating-ui) ?" },
 			],
 			required: false
 		});

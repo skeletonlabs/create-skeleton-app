@@ -31,13 +31,14 @@ export class SkeletonOptions {
 		this.path = '.';
 		this.forms = false;
 		this.typography = false;
-		this.lineclamp = false;
-		this.skeletontheme = 'skeleton';
-		this.skeletontemplate = 'bare';
-		this.packagemanager = 'npm';
-		this.packages = [];
 		this.codeblocks = false;
 		this.popups = true;
+		this.inspector = false;
+		this.skeletontheme = 'skeleton';
+		this.skeletontemplate = 'bare';
+		this.packagemanager = 'pnpm';
+		this.packages = [];
+
 
 		// props below are private to the Skeleton team
 		this.verbose = false;
@@ -49,16 +50,6 @@ export class SkeletonOptions {
 }
 
 export async function createSkeleton(opts) {
-	//create-svelte will happily overwrite an existing directory, foot guns are bad mkay
-	opts.path = path.resolve(
-		opts?.path,
-		opts.name.replace(/\s+/g, '-').toLowerCase(),
-	);
-
-	if (fs.existsSync(opts.path) && fs.readdirSync(opts.path).length != 0) {
-		console.error(red(bold('Install directory already exists!')));
-		process.exit();
-	}
 
 	fs.mkdirp(opts.path);
 
@@ -77,7 +68,7 @@ export async function createSkeleton(opts) {
 		'@skeletonlabs/skeleton'
 	];
 	// Extra packages for a monorepo install
-	if (opts?.monorepo){
+	if (opts?.monorepo) {
 		packages.push('@sveltejs/adapter-vercel')
 		packages.push('is-ci')
 	}
@@ -93,7 +84,7 @@ export async function createSkeleton(opts) {
 	let result = spawnSync(opts.packagemanager, ['add', '-D', ...packages], {
 		shell: true,
 	});
-	
+
 	// Capture any errors from stderr and display for the user to report it to us
 	if (result?.stderr.toString().length) {
 		console.log(red(bold(
@@ -122,7 +113,7 @@ export async function createSkeleton(opts) {
 		mkdirp('scripts')
 		fs.copySync(__dirname + './swapdeps.mjs', process.cwd() + '/scripts/swapdeps.mjs', { overwrite: true });
 		let pkg = JSON.parse(fs.readFileSync('package.json'));
-		pkg.scripts['preinstall'] = 'node scripts/swapdeps.mjs';
+		pkg.scripts['install'] = 'node ./scripts/swapdeps.mjs';
 		pkg.scripts['dep'] = 'vercel build && vercel deploy --prebuilt';
 		pkg.scripts['prod'] = 'vercel build --prod && vercel deploy --prebuilt --prod';
 		fs.writeFileSync('package.json', JSON.stringify(pkg, null, 2));
@@ -148,21 +139,27 @@ function createSvelteConfig(opts) {
 	// For some reason create-svelte will turn off preprocessing for jsdoc and no type checking
 	// this will break the using of all CSS preprocessing as well, which is undesirable.
 	// Here we will just return the typescript default setup
-	let str = ""; 
+	let str = "";
 	if (opts?.monorepo) {
 		str += `import adapter from '@sveltejs/adapter-vercel';\n`
 	} else {
 		str += `import adapter from '@sveltejs/adapter-auto';\n`
 	}
-	str +=`import { vitePreprocess } from '@sveltejs/kit/vite';`
+	str += `import { vitePreprocess } from '@sveltejs/kit/vite';`
 	if (opts?.monorepo) { str += `\nimport path from 'path';` }
 	str += `
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
 	// Consult https://kit.svelte.dev/docs/integrations#preprocessors
 	// for more information about preprocessors
-	preprocess: vitePreprocess(),
-
+	preprocess: vitePreprocess(),`
+	if (opts?.inspector) {
+		str += `
+	vitePlugin: {
+		inspector: true,   
+	},`
+	}
+	str += `
 	kit: {
 		// adapter-auto only supports some environments, see https://kit.svelte.dev/docs/adapter-auto for a list.
 		// If your environment is not supported or you settled on a specific environment, switch out the adapter.
