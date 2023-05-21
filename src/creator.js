@@ -49,9 +49,9 @@ export class SkeletonOptions {
 }
 
 export async function createSkeleton(opts) {
-	fs.mkdirp(opts.path);
+	const startPath = process.cwd();
 
-	// Hidden option to change the install type to be a Svelte-Kit library
+	// Hidden option to change the install type to be a Svelte-Kit library project
 	if (opts?.library) {
 		opts.template = 'skeletonlib';
 	}
@@ -124,6 +124,8 @@ export async function createSkeleton(opts) {
 	copyTemplate(opts);
 	// creating the missing lib folder...
 	mkdirp(path.join('src', 'lib'));
+	// go back to starting location in case we get called again to create another template
+	process.chdir(startPath);
 	return opts;
 }
 

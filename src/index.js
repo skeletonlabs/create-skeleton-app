@@ -1,10 +1,9 @@
 #!/usr/bin/env node
 import { SkeletonOptions, createSkeleton } from './creator.js';
-export { SkeletonOptions, createSkeleton };
 import fs from 'fs-extra';
 import mri from 'mri';
 import { bold, cyan, gray, grey, red } from 'kleur/colors';
-import { intro, outro, text, select, multiselect, spinner, confirm, cancel, isCancel } from '@clack/prompts';
+import { intro, text, select, multiselect, spinner } from '@clack/prompts';
 import events from 'events';
 import { dist, getHelpText, goodbye } from './utils.js';
 import path from 'path';
@@ -25,12 +24,6 @@ async function main() {
 	// grab any passed arguments from the command line
 	let opts = await parseArgs();
 
-	// test the path to make sure it is safe to install
-	if (opts.path === undefined) opts.path = process.cwd();
-	opts.name = opts.name.replace(/\s+/g, '-').toLowerCase()
-	opts.path = path.resolve(opts.path, opts.name);
-
-	checkIfDirSafeToInstall(opts.path);
 
 	if ('quiet' in opts) {
 		// in quiet mode we prefill the defaults, then overlay the passed options and bypass all of askForMissingParams so that it
@@ -168,6 +161,11 @@ Problems? Open an issue on ${cyan('https://github.com/skeletonlabs/skeleton/issu
 		});
 		goodbye(opts.name);
 	}
+	// test the path to make sure it is safe to install
+	if (opts.path === undefined) opts.path = process.cwd();
+	opts.name = opts.name.replace(/\s+/g, '-').toLowerCase()
+	opts.path = path.resolve(opts.path, opts.name);
+	checkIfDirSafeToInstall(opts.path);
 
 	if (!('types' in opts)) {
 		opts.types = await select({
