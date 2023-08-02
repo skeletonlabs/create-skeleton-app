@@ -24,7 +24,6 @@ async function main() {
 	// grab any passed arguments from the command line
 	let opts = await parseArgs();
 
-
 	if ('quiet' in opts) {
 		// in quiet mode we prefill the defaults, then overlay the passed options and bypass all of askForMissingParams so that it
 		// doesn't have to constantly check for quietmode all the time.
@@ -114,8 +113,8 @@ function checkIfDirSafeToInstall(path) {
 	//lets see whats in there
 	const conflicts = fs
 		.readdirSync(path)
-		.filter(
-			(file) => /^(package.json|svelte.config.js|tailwind.config.cjs|pnpm-lock.yaml|postcss.config.cjs|vite.config.ts)$/.test(file),
+		.filter((file) =>
+			/^(package.json|svelte.config.js|tailwind.config.cjs|pnpm-lock.yaml|postcss.config.cjs|vite.config.ts)$/.test(file),
 		);
 
 	if (conflicts.length > 0) {
@@ -153,7 +152,7 @@ Problems? Open an issue on ${cyan('https://github.com/skeletonlabs/skeleton/issu
 	//NOTE: When doing checks here, make sure to test for the presence of the prop, not the prop value as it may be set to false deliberately.
 	if (!('name' in opts)) {
 		opts.name = await text({
-			message: 'Name for your new project:?',
+			message: 'Name for your new project?',
 			placeholder: 'my-app',
 			validate(value) {
 				if (value.length === 0) return `App name is required!`;
@@ -163,7 +162,7 @@ Problems? Open an issue on ${cyan('https://github.com/skeletonlabs/skeleton/issu
 	}
 	// test the path to make sure it is safe to install
 	if (opts.path === undefined) opts.path = process.cwd();
-	opts.name = opts.name.replace(/\s+/g, '-').toLowerCase()
+	opts.name = opts.name.replace(/\s+/g, '-').toLowerCase();
 	opts.path = path.resolve(opts.path, opts.name);
 	checkIfDirSafeToInstall(opts.path);
 
@@ -193,10 +192,10 @@ Problems? Open an issue on ${cyan('https://github.com/skeletonlabs/skeleton/issu
 			}),
 			options: [
 				{ value: 'eslint', label: 'Add ESLint for code linting?' },
-				{ value: 'prettier', label: 'Add Prettier for code formatting ?' },
-				{ value: 'playwright', label: 'Add Playwright for browser testing ?' },
-				{ value: 'vitest', label: 'Add Vitest for unit testing ?' },
-				{ value: 'inspector', label: 'Add Svelte Inspector for quick access to your source files from the browser ?' },
+				{ value: 'prettier', label: 'Add Prettier for code formatting?' },
+				{ value: 'playwright', label: 'Add Playwright for browser testing?' },
+				{ value: 'vitest', label: 'Add Vitest for unit testing?' },
+				{ value: 'inspector', label: 'Add Svelte Inspector for quick access to your source files from the browser?' },
 			],
 			required: false,
 		});
@@ -216,10 +215,10 @@ Problems? Open an issue on ${cyan('https://github.com/skeletonlabs/skeleton/issu
 				return Object.keys(opts).includes(value);
 			}),
 			options: [
-				{ value: 'forms', label: 'Add Tailwind forms ?' },
-				{ value: 'typography', label: 'Add Tailwind typography ?' },
-				{ value: 'codeblocks', label: 'Add CodeBlock (installs highlight.js) ?' },
-				{ value: 'popups', label: 'Add Popups (installs floating-ui) ?' },
+				{ value: 'forms', label: 'Add Tailwind forms?' },
+				{ value: 'typography', label: 'Add Tailwind typography?' },
+				{ value: 'codeblocks', label: 'Add CodeBlock (installs highlight.js)?' },
+				{ value: 'popups', label: 'Add Popups (installs floating-ui)?' },
 			],
 			required: false,
 		});
