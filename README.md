@@ -3,4 +3,4 @@
 
 `create-skeleton-app` has been migrated into the main [Skeleton monorepo](https://github.com/skeletonlabs/skeleton/tree/dev/packages/create-skeleton-app)
 
-Please add issues there and label them with `create-skeleton-app`
+Please report issues here, but PR's must target the monorepo codebase and be labelled with `create-skeleton-app`
